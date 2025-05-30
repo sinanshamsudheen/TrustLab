@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import re
 import psutil
 import os
+import shap
 
 url = input("Enter the URL to check: ")
 
@@ -44,9 +45,23 @@ features = {
 print_memory('After Extraction..')
 
 model = joblib.load('phishing_modelv1.pkl')
+# explainer = shap.Explainer(model)
 
 features_df = pd.DataFrame([features])
 result = 'Phishing' if model.predict(features_df)[0] == 1 else 'Legitimate'
 print_memory('After Prediction')
+explainer = shap.LinearExplainer(model, features_df)
+shap_values = explainer(features_df)
+
+        # Get feature importance for this sample
+top_features = sorted(zip(features_df.columns, shap_values.values[0]), key=lambda x: abs(x[1]), reverse=True)[:3]
+
+print(f"\nURL: {url} --> {result}")
+
+print("Top SHAP Contributions:")
+for feat, val in top_features:
+    direction = "↑" if val > 0 else "↓"
+    print(f"  {feat}: {val:.4f} ({direction} risk)")
+
 print(result)
 
