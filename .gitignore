@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# VSCode / Jupyter / IDE
+.vscode/
+.ipynb_checkpoints/
+
+# Data files
+Phishing/phishing_with_features_final.csv
+
+# Logs and temp files
+*.log
+*.tmp
