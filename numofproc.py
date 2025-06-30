@@ -1,14 +1,14 @@
 import json
 
 # Load the JSON logs file
-with open('kafka_logs_cleaned.json', 'r') as f:
+with open('kafka_logs.json', 'r') as f:
     data = json.load(f)
 
 # Assuming data is a list of log entries
 process_values = set()
 
 for entry in data:
-    process = entry.get('process')
+    process = entry.get('service')
     if process is not None:
         process_values.add(process)
 
