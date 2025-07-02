@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import joblib
 import shap
-import psutil
 import os
 import re
 import string
@@ -21,10 +20,7 @@ except FileNotFoundError as e:
     print("Please run the training notebook first to generate all required files.")
     exit(1)
 
-def print_memory(stage=''):
-    process = psutil.Process(os.getpid())
-    mem = process.memory_info().rss / (1024 ** 2)
-    print(f"RAM Usage [{stage}]: {mem:.2f} MB")
+# Memory tracking removed
 
 # Define the same stopwords used in training
 manual_stopwords = set("""
@@ -68,8 +64,6 @@ def extract_features(text):
     })
 
 def test_email(email_text):
-    print_memory("Start")
-
     # Process the email exactly as in training
     # Step 1: Extract features from ORIGINAL text (before cleaning)
     original_text_features = extract_features(email_text)
@@ -79,9 +73,7 @@ def test_email(email_text):
     cleaned_text = clean_text(email_text)
 
     # Step 3: Extract TF-IDF features
-    print_memory("Before TF-IDF")
     X_tfidf = vectorizer.transform([cleaned_text])
-    print_memory("After TF-IDF")
 
     # Step 4: Scale the extra features
     extra_features_scaled = scaler.transform(extra_features_df)
@@ -89,14 +81,10 @@ def test_email(email_text):
     # Step 5: Combine features exactly as in training
     X_combined = np.hstack([X_tfidf.toarray(), extra_features_scaled])
 
-    print_memory("After Feature Engineering")
-
     # Make prediction
     prediction = model.predict(X_combined)[0]
     probabilities = model.predict_proba(X_combined)[0]
     result = "Spam" if prediction == 1 else "Ham"
-
-    print_memory("After Prediction")
 
     # Display results
     print(f"\nEmail Analysis Results:")
@@ -105,11 +93,11 @@ def test_email(email_text):
     print(f"Confidence: Ham={probabilities[0]:.3f}, Spam={probabilities[1]:.3f}")
 
     # Feature breakdown
-    print(f"\nFeature Analysis:")
-    print(f"Text Features (extracted from original text):")
-    for feature_name, value in original_text_features.items():
-        scaled_value = extra_features_scaled[0][list(original_text_features.index).index(feature_name)]
-        print(f"  {feature_name}: {value} (scaled: {scaled_value:.4f})")
+    # print(f"\nFeature Analysis:")
+    # print(f"Text Features (extracted from original text):")
+    # for feature_name, value in original_text_features.items():
+    #     scaled_value = extra_features_scaled[0][list(original_text_features.index).index(feature_name)]
+    #     print(f"  {feature_name}: {value} (scaled: {scaled_value:.4f})")
 
     # Top TF-IDF features
     print(f"\nTop TF-IDF Features:")
@@ -137,9 +125,9 @@ def test_email(email_text):
         
         # Get top contributing features
         feature_importance = np.abs(shap_values.values[0])
-        top_indices = np.argsort(feature_importance)[-10:][::-1]
+        top_indices = np.argsort(feature_importance)[-5:][::-1]
         
-        print("Top 10 SHAP Contributions:")
+        print("Top 5 SHAP Contributions:")
         for idx in top_indices:
             if idx < len(all_feature_names):
                 feat_name = all_feature_names[idx]
@@ -149,8 +137,6 @@ def test_email(email_text):
                 
     except Exception as e:
         print(f"SHAP analysis failed: {e}")
-
-    print_memory("Final")
 
 # Test with different email examples
 if __name__ == "__main__":
