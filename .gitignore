@@ -16,3 +16,4 @@ Email/spam_Emails_data.csv
 *.log
 *.tmp
 *.csv
+.env
