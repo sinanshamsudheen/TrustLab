@@ -130,7 +130,7 @@ for i in range(n_samples):
     if random.random() < 0.05:
         attempts += random.choice([-1, 0, 1])
         attempts = max(1, attempts)
-      data.append({
+        data.append({
         'attempts_in_60s': attempts,
         'unique_users_in_60s': unique_users,
         'invalid_user': invalid_user,

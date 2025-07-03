@@ -25,7 +25,7 @@ INVALID_USERS = ["admin1", "test", "root", "user123", "sanket"]
 # Ensure clean output
 output_file = "balanced_synthetic_auth_dataset.csv"
 if os.path.exists(output_file):
-    os.remove(output_file)pd
+    os.remove(output_file)
 import random
 from datetime import datetime, timedelta
 from faker import Faker
