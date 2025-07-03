@@ -26,25 +26,32 @@ for i in range(n_samples):
     # Choose IP and user
     ip = random.choice(ip_pool)
     if is_anomaly:
-        # Use wrong user or noise
         user = random.choice([u for u in user_pool if known_users.get(ip, None) != u])
     else:
         user = known_users[ip] if ip in known_users else random.choice(user_pool)
 
-    # Generate features
-    attempts = random.randint(20, 35) if is_anomaly else random.randint(6, 7)
+    # Realistic attempt generation
+    if is_anomaly:
+        # Mix of borderline and high anomaly attempts
+        attempts = random.choice([
+            random.randint(8, 15),   # suspicious
+            random.randint(16, 30)   # brute-force
+        ])
+    else:
+        # Normal users trigger fewer logs due to log inflation (e.g., 3 log lines per real attempt)
+        attempts = random.randint(6, 7)
+
     unique_users = random.randint(3, 6) if is_anomaly else random.randint(1, 2)
     invalid_user = 1 if is_anomaly else (1 if random.random() < 0.05 else 0)
     success_after_fail = 1 if (not is_anomaly and random.random() < 0.7) else 0
     true_user = int(user == known_users.get(ip, ''))
 
-    # Optional feature noise
+    # Add noise
     if random.random() < 0.1:
         attempts += random.randint(-2, 2)
     if random.random() < 0.1:
         unique_users += random.choice([-1, 0, 1])
 
-    # Ensure no negatives
     attempts = max(1, attempts)
     unique_users = max(1, unique_users)
 
@@ -57,13 +64,15 @@ for i in range(n_samples):
         'anomaly': int(is_anomaly)
     })
 
-# Create DataFrame and save
+# Create DataFrame and shuffle
 df = pd.DataFrame(data)
 df = df.sample(frac=1, random_state=42).reset_index(drop=True)
 
+# Save CSV
 output_file = 'noisy_isolation_features_dataset.csv'
 df.to_csv(output_file, index=False)
 
+# Report
 print(f"✅ Dataset saved as '{output_file}'")
 print(df['anomaly'].value_counts())
 print(df.head())

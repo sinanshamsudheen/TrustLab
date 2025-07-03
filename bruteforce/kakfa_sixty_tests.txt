@@ -1,0 +1,51 @@
+[the below logs are when i entered one wrong password]
+Jun 24 15:30:57 log-collector web_apt 2025-06-13T11:16:47+05:30 webserver webauth 2025-06-13T11:16:47.820698+05:30 webserver sshd[486462]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tt>Jun 24 15:28:26 log-collector web_auth 2025-06-13T11:14:17+05:30 webserver webauth 2025-06-13T11:14:17.203282+05:30 webserver sshd[486385]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ru>Jun 24 15:30:57 log-collector web_auth 2025-06-13T11:16:47+05:30 webserver webauth 2025-06-13T11:16:47.820698+05:30 webserver sshd[486462]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 t>Jun 24 15:30:58 log-collector web_apt 2025-06-13T11:16:49+05:30 webserver webauth 2025-06-13T11:16:49.479519+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:30:57 log-collector web_auth 2025-06-13T11:16:47+05:30 webserver webauth 2025-06-13T11:16:47.820698+05:30 webserver sshd[486462]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 t>Jun 24 15:30:58 log-collector web_auth 2025-06-13T11:16:49+05:30 webserver webauth 2025-06-13T11:16:49.479519+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+
+[the below logs are for when i entered wrong passwords till denied (3 failed passwords)]
+
+Jun 24 15:31:54 log-collector web_apt 2025-06-13T11:17:45+05:30 webserver webauth 2025-06-13T11:17:45.346770+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:30:58 log-collector web_auth 2025-06-13T11:16:49+05:30 webserver webauth 2025-06-13T11:16:49.479519+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:54 log-collector web_auth 2025-06-13T11:17:45+05:30 webserver webauth 2025-06-13T11:17:45.346770+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:59 log-collector web_apt 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.097997+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:54 log-collector web_auth 2025-06-13T11:17:45+05:30 webserver webauth 2025-06-13T11:17:45.346770+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.097997+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:59 log-collector web_apt 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.557616+05:30 webserver sshd[486462]: Connection closed by authenticating user primum 10.51.1.77 port 39288 [preauth]
+Jun 24 15:31:59 log-collector web_apt 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.558324+05:30 webserver sshd[486462]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.51.1.77  user=primum
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.097997+05:30 webserver sshd[486462]: Failed password for primum from 10.51.1.77 port 39288 ssh2
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.557616+05:30 webserver sshd[486462]: Connection closed by authenticating user primum 10.51.1.77 port 39288 [preauth]
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.557616+05:30 webserver sshd[486462]: Connection closed by authenticating user primum 10.51.1.77 port 39288 [preauth]
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.558324+05:30 webserver sshd[486462]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.51.1.77  user=primum
+
+[the below logs are for i logged in successfully with just one password attempt]
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.762217+05:30 webserver sshd[486505]: Accepted password for primum from 10.51.1.77 port 60906 ssh2
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.763299+05:30 webserver sshd[486505]: pam_unix(sshd:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:31:59 log-collector web_auth 2025-06-13T11:17:50+05:30 webserver webauth 2025-06-13T11:17:50.558324+05:30 webserver sshd[486462]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.51.1.77  user=primum
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.762217+05:30 webserver sshd[486505]: Accepted password for primum from 10.51.1.77 port 60906 ssh2
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.762217+05:30 webserver sshd[486505]: Accepted password for primum from 10.51.1.77 port 60906 ssh2
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.763299+05:30 webserver sshd[486505]: pam_unix(sshd:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.767442+05:30 webserver systemd-logind[704]: New session 133145 of user primum.
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.763299+05:30 webserver sshd[486505]: pam_unix(sshd:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.767442+05:30 webserver systemd-logind[704]: New session 133145 of user primum.
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.787741+05:30 webserver (systemd): pam_unix(systemd-user:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.767442+05:30 webserver systemd-logind[704]: New session 133145 of user primum.
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.787741+05:30 webserver (systemd): pam_unix(systemd-user:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.140730+05:30 webserver nologin: Attempted login by primum (UID: 1001) on /dev/pts/7
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143419+05:30 webserver sshd[486595]: Received disconnect from 10.51.1.77 port 60906:11: disconnected by user
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143467+05:30 webserver sshd[486595]: Disconnected from user primum 10.51.1.77 port 60906
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143776+05:30 webserver sshd[486505]: pam_unix(sshd:session): session closed for user primum
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.145666+05:30 webserver systemd-logind[704]: Session 133145 logged out. Waiting for processes to exit.
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:06+05:30 webserver webauth 2025-06-13T11:19:06.787741+05:30 webserver (systemd): pam_unix(systemd-user:session): session opened for user primum(uid=1001) by primum(uid=0)
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.140730+05:30 webserver nologin: Attempted login by primum (UID: 1001) on /dev/pts/7
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.140730+05:30 webserver nologin: Attempted login by primum (UID: 1001) on /dev/pts/7
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143419+05:30 webserver sshd[486595]: Received disconnect from 10.51.1.77 port 60906:11: disconnected by user
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143467+05:30 webserver sshd[486595]: Disconnected from user primum 10.51.1.77 port 60906
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143419+05:30 webserver sshd[486595]: Received disconnect from 10.51.1.77 port 60906:11: disconnected by user
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143467+05:30 webserver sshd[486595]: Disconnected from user primum 10.51.1.77 port 60906
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143776+05:30 webserver sshd[486505]: pam_unix(sshd:session): session closed for user primum
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.143776+05:30 webserver sshd[486505]: pam_unix(sshd:session): session closed for user primum
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.145666+05:30 webserver systemd-logind[704]: Session 133145 logged out. Waiting for processes to exit.
+Jun 24 15:33:16 log-collector web_apt 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.146114+05:30 webserver systemd-logind[704]: Removed session 133145.
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.145666+05:30 webserver systemd-logind[704]: Session 133145 logged out. Waiting for processes to exit.
+Jun 24 15:33:16 log-collector web_auth 2025-06-13T11:19:07+05:30 webserver webauth 2025-06-13T11:19:07.146114+05:30 webserver systemd-logind[704]: Removed session 133145.
+~                                                                                                                                                                              
