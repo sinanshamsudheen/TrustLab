@@ -1,14 +1,122 @@
 # SSH Brute Force Detection & APT Correlation System
 
-A comprehensive security monitoring system that detects SSH brute force attacks and correlates them with suspicious package installations to identify potential system compromises.
+A security monitoring system that detects SSH brute force attacks and correlates them with suspicious APT package installations.
 
-## 🎯 Overview
+## 📁 Project Structure
 
-This system provides intelligent threat detection by:
-1. **SSH Anomaly Detection** - Uses machine learning to identify brute force attacks in real-time
-2. **APT Package Analysis** - Monitors system package installations for malicious tools with timestamp correlation
-3. **Simplified Architecture** - Streamlined design for efficiency and reliability
-4. **Real-time Processing** - Processes logs from Kafka streams with 60-second windows
+```
+├── artifacts/             # Machine learning models and training data
+│   ├── bruteforce_model.pkl
+│   ├── bruteforce_training.ipynb
+│   └── noisy_isolation_features_dataset.csv
+├── config/                # Configuration and service files
+│   ├── config.yaml        # Centralized configuration file
+│   ├── setup.sh
+│   ├── start_apt_monitor.sh
+│   ├── stop_trustlab_service.sh
+│   ├── trustlab_service.sh
+│   ├── userlist.json
+│   └── verify_setup.py
+├── logs/                  # Log files
+│   ├── apt_monitor.log
+│   ├── apt_history_test.log
+│   ├── kafka_logs_output.log
+│   ├── kafka_sixty.log
+│   └── kafka_suspicious.log
+├── src/                   # Core source code
+│   ├── __init__.py
+│   ├── apt_analyzer.py
+│   ├── apt_monitor.py
+│   ├── bruteforce_detector.py
+│   ├── bruteforce_parser.py
+│   └── config_loader.py   # Configuration system
+├── tests/                 # Testing utilities
+│   ├── __init__.py
+│   ├── create_apt_test.py
+│   ├── create_suspicious_logs.py
+│   ├── inspect_model.py
+│   ├── test_apt_monitor.py
+│   ├── test_detection.py
+│   ├── test_log_parsing.py
+│   └── test_structure.py
+├── main.py                # Main entry point
+└── requirements.txt       # Python dependencies
+```
+
+## 🔧 Quick Installation
+
+```bash
+# Clone the repository
+cd trustlab-security
+
+# Run the setup script (installs dependencies and creates required directories)
+./config/setup.sh
+
+# Alternative manual installation:
+# Install dependencies
+pip install -r requirements.txt
+
+# Make scripts executable
+chmod +x config/*.py config/*.sh
+
+# Verify installation
+python3 config/verify_setup.py
+```
+
+## 🚀 Running the System
+
+### Option 1: Using the Service Script
+
+```bash
+# Start both services with the full trustlab service script
+./config/trustlab_service.sh
+
+# To stop the services
+./config/stop_trustlab_service.sh
+```
+
+### Option 2: Using the Main Entry Point
+
+```bash
+# Run SSH brute force detection only
+python3 main.py --detect
+
+# Run APT monitoring service only
+python3 main.py --monitor
+```
+
+### Option 3: Individual Components
+
+```bash
+# Start the APT monitoring service (runs in background)
+./config/start_apt_monitor.sh
+
+# Run SSH brute force detection (runs once)
+python3 -m src.bruteforce_detector
+```
+
+## 📋 System Components
+
+### Core Components
+- **src/bruteforce_parser.py**: Processes Kafka streams of SSH logs
+- **src/bruteforce_detector.py**: ML-based anomaly detection for SSH brute force attacks
+- **src/apt_analyzer.py**: Analyzes APT history for malicious package installations
+- **src/apt_monitor.py**: Continuous monitoring of APT activities
+- **src/config_loader.py**: Centralized configuration management system
+- **config/config.yaml**: Configuration file with all system settings
+- **config/userlist.json**: Correlation database linking suspicious IPs to usernames
+
+### Service Scripts
+- **config/trustlab_service.sh**: Starts all monitoring services
+- **config/stop_trustlab_service.sh**: Stops all monitoring services
+- **config/start_apt_monitor.sh**: Starts only the APT monitoring service
+
+### Support Files
+- **artifacts/bruteforce_model.pkl**: Pre-trained ML model (IsolationForest)
+- **artifacts/bruteforce_training.ipynb**: Jupyter notebook for model training
+- **requirements.txt**: Python package dependencies
+- **setup.sh**: Setup script for dependencies
+- **verify_setup.py**: System verification script
 
 ## 🏗️ System Architecture
 
@@ -19,486 +127,190 @@ This system provides intelligent threat detection by:
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                                         │
                                                         ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  APT Log Files  │    │    tester2.py    │◀───│ ML Model (.pkl) │
-│ (/var/log/apt/) │───▶│ (Main Analyzer)  │    │ IsolationForest │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌──────────────────┐
-                       │ apt_analyzer.py  │
-                       │ (Package Mon.)   │
-                       └──────────────────┘
+                                               ┌─────────────────┐
+                                               │bruteforce_detect│
+                                               │    or.py        │◀────┐
+                                               └────────┬────────┘     │
+                                                        │              │
+                                                        ▼              │
+                   ┌─────────────────┐        ┌─────────────────┐     │
+                   │   userlist.json │◀───────│  apt_analyzer.py│     │
+                   │ (IP-User Map)   │        │                 │     │
+                   └─────────────────┘        └────────┬────────┘     │
+                            │                          │              │
+                            │                          ▼              │
+                            │                 ┌─────────────────┐     │
+                            └────────────────▶│  apt_monitor.py │─────┘
+                                              │ (Continuous     │
+                                              │  Monitoring)    │
+                                              └─────────────────┘
 ```
 
-## 📁 File Structure
+## 🔍 How It Works
 
-```
-bruteforce/
-├── bruteforce_parser.py     # Kafka consumer & log processor
-├── tester2.py              # Main ML-based analysis engine
-├── apt_analyzer.py         # Timestamp-aware APT package monitoring
-├── test_log_parsing.py     # Log parsing test utility
-├── verify_setup.py         # System verification script
-├── setup.sh               # Setup script for dependencies
-├── requirements.txt       # Python package dependencies
-├── bruteforce_model.pkl   # Pre-trained IsolationForest model
-└── README.md              # This documentation
-```
+1. **SSH Log Collection**:
+   - `bruteforce_parser.py` captures SSH logs from Kafka
+   - Logs are filtered and stored in a 60-second window file
 
-## 🔄 Data Flow
+2. **Anomaly Detection**:
+   - `bruteforce_detector.py` analyzes logs using machine learning
+   - Extracts features like login attempt patterns
+   - Uses IsolationForest to identify anomalous behavior
 
-1. **Log Collection**: `bruteforce_parser.py` consumes SSH logs from Kafka topics
-2. **Preprocessing**: Filters and processes logs into 60-second windows
-3. **Feature Extraction**: `tester2.py` extracts behavioral features from SSH logs
-4. **Anomaly Detection**: Machine learning model identifies suspicious patterns
-5. **APT Analysis**: When anomaly detected, `apt_analyzer.py` searches for malicious packages
-6. **Reporting**: System outputs detailed threat analysis and recommendations
+3. **Username-IP Correlation**:
+   - When an anomaly is detected, username and IP are extracted
+   - Information is stored in `userlist.json` for continuous monitoring
 
-## 🚀 Quick Start
+4. **APT Activity Monitoring**:
+   - `apt_analyzer.py` searches for suspicious package installations
+   - `apt_monitor.py` continuously monitors APT logs for known suspicious users
+   - Alerts are generated when suspicious activities are detected
 
-### Prerequisites
-- Python 3.8+
-- Kafka cluster running on `10.130.171.246:9092`
-- SSH logs being published to Kafka topics: `web_auth`, `webapt`
-- Linux system with APT package manager (for full functionality)
+## 📊 Output Example
 
-### Setup
-```bash
-# Install dependencies from requirements.txt
-pip install -r requirements.txt
-
-# OR install individually
-pip install pandas scikit-learn kafka-python joblib python-dateutil
-
-# Make setup script executable
-chmod +x setup.sh
-
-# Run automated setup
-./setup.sh
-
-# Verify installation
-python3 verify_setup.py
-```
-
-### Running the System
-
-1. **Verify Setup** (Recommended first step):
-```bash
-python3 verify_setup.py
-```
-This will check all dependencies, files, and basic functionality.
-
-2. **Start Log Collection**:
-```bash
-python3 bruteforce_parser.py
-```
-This will:
-- Connect to Kafka broker
-- Listen to `web_auth` and `webapt` topics
-- Process and save logs to `/home/primum/logs/kafka_sixty.log`
-
-3. **Run Detection Analysis**:
-```bash
-python3 tester2.py
-```
-This will:
-- Load the trained ML model
-- Analyze recent logs for brute force patterns
-- Trigger APT analysis for suspicious IPs
-- Display detailed threat reports
-
-### Testing
-
-Create test logs and run analysis:
-```bash
-# Generate test logs
-python3 test_log_parsing.py
-
-# Run analysis on test data
-python3 tester2.py
-```
-
-## 🧠 Machine Learning Model
-
-### Model Details
-- **Algorithm**: Isolation Forest (Unsupervised Anomaly Detection)
-- **Features**: 
-  - `attempts_in_60s`: Number of authentication attempts
-  - `unique_users_in_60s`: Number of unique usernames tried
-  - `invalid_user`: Boolean flag for invalid user attempts
-  - `success_after_fail`: Boolean flag for successful login after failures
-  - `true_user`: Boolean flag for expected user from known IP
-
-### Model Performance
-- **Anomaly Threshold**: -1 (anomaly), 1 (normal)
-- **Training Data**: Historical SSH authentication patterns
-- **False Positive Rate**: Optimized for security environments
-
-## 🔍 APT Package Analysis
-
-### Monitored Suspicious Keywords
-The system monitors for installations of these potentially malicious packages:
-- **Network Scanners**: nmap, masscan, nikto
-- **Password Crackers**: hydra, john, hashcat
-- **Exploitation Frameworks**: metasploit, sqlmap
-- **Web Security Tools**: burpsuite, gobuster, dirb
-- **Network Tools**: wireshark, tcpdump, netcat
-- **Proxy/Anonymization**: proxychains, tor
-- **Wireless Security**: aircrack, reaver
-- **Social Engineering**: beef, maltego
-- **Malware**: backdoor, rootkit, keylogger
-
-### Timestamp Correlation
-- **Default Window**: ±24 hours from anomaly detection
-- **Configurable**: Time window can be adjusted per analysis
-- **Smart Filtering**: Ignores old installations unrelated to current threats
-
-## 📊 Output Examples
-
-### Normal Traffic
-```
-Predictions (−1 = anomaly, 1 = normal): [1]
-192.168.1.10 → ✅ Normal
-
-📊 ANALYSIS SUMMARY:
-SSH anomalies detected: 0
-✅ No anomalies detected in this analysis.
-```
-
-### Detected Anomaly
 ```
 Predictions (−1 = anomaly, 1 = normal): [-1]
 192.168.1.100 → ⚠️ Anomaly
   - Attempts: 30
   - Unique users: 15
   - Invalid user attempts detected
-  - Users attempted: admin, root, user, test, ...
+  - Users attempted: admin, root, user, test
+  - Selected username for monitoring: root
 
 [!] Anomaly detected from IP: 192.168.1.100
+[!] Associated username: root
 [*] Searching for suspicious APT activity (±24h window)...
+[+] Added/Updated root with IP 192.168.1.100 to monitoring list
 [!!!] Suspicious activity found within 24h window:
     Time: 2025-06-25 14:30:15
     Action: Install: nmap:amd64 (7.80+dfsg1-2build1)
-
-📊 ANALYSIS SUMMARY:
-SSH anomalies detected: 1
-🔥 Anomalous IPs: 192.168.1.100
+    User: root
+    Command: apt install nmap
 ```
 
 ## ⚙️ Configuration
 
-### Kafka Settings
-Edit `bruteforce_parser.py`:
+All configuration is centralized in a single YAML file at `config/config.yaml`:
+
+```yaml
+# Kafka Configuration
+kafka:
+  broker: "10.130.171.246:9092"
+  topics:
+    - "web_auth" 
+    - "webapt"
+  consumer_group: "auth-consumer-group"
+
+# File Paths
+paths:
+  logs:
+    base_dir: "${PROJECT_ROOT}/logs"
+    raw_log: "${PROJECT_ROOT}/logs/kafka_logs_output.log"
+    recent_log: "${PROJECT_ROOT}/logs/kafka_sixty.log"
+    suspicious_log: "${PROJECT_ROOT}/logs/kafka_suspicious.log"
+    apt_log: "${PROJECT_ROOT}/logs/apt_history_test.log"
+    monitor_log: "${PROJECT_ROOT}/logs/apt_monitor.log"
+
+  user_data:
+    userlist: "${PROJECT_ROOT}/config/userlist.json"
+  
+  models:
+    bruteforce_model: "${PROJECT_ROOT}/artifacts/bruteforce_model.pkl"
+
+# Detection Configuration
+detection:
+  time_window_seconds: 60
+  suspicious_keywords:
+    - 'nmap'
+    - 'masscan'
+    - 'hydra'
+    - 'john'
+    - 'hashcat'
+    - 'metasploit'
+    - 'sqlmap'
+    - 'nikto'
+    - 'dirb'
+    - 'gobuster'
+    - 'burpsuite'
+    - 'wireshark'
+    - 'tcpdump'
+    - 'netcat'
+    - 'socat'
+    - 'proxychains'
+    - 'tor'
+    - 'aircrack'
+    - 'reaver'
+    - 'ettercap'
+    - 'beef'
+    - 'armitage'
+    - 'maltego'
+    - 'backdoor'
+    - 'rootkit'
+    - 'keylogger'
+```
+
+### Configuration Loader
+
+The system uses a singleton configuration loader class to access configuration values from anywhere in the codebase:
+
 ```python
-BROKER = '10.130.171.246:9092'
-TOPICS = ['web_auth', 'webapt']
+from src.config_loader import Config
+
+# Get configuration instance
+config = Config()
+
+# Access configuration values using dot notation
+kafka_broker = config.get('kafka.broker')
+log_file = config.get('paths.logs.recent_log')
+time_window = config.get('detection.time_window_seconds')
+
+# Configuration automatically resolves project paths
+# ${PROJECT_ROOT} is replaced with the actual project directory
 ```
 
-### Log Paths
-Edit file paths as needed:
-```python
-RAW_LOG_FILE = '/home/primum/logs/kafka_logs_output.log'
-RECENT_LOG_FILE = '/home/primum/logs/kafka_sixty.log'
-APT_LOG_PATH = '/var/log/apt/history.log'
-```
+This centralized approach makes the system easy to configure without modifying code files.
 
-### APT Analysis Time Window
-Modify `apt_analyzer.py`:
-```python
-search_apt_history(suspicious_ip, time_window_hours=24)  # Default: 24 hours
-```
+## 🚨 Testing
 
-## 🔧 Advanced Usage
+The system includes utilities for testing:
 
-### Custom Suspicious Keywords
-Add custom keywords to `apt_analyzer.py`:
-```python
-suspicious_keywords = [
-    'nmap', 'hydra', 'metasploit',  # Default keywords
-    'custom-tool', 'proprietary-scanner'  # Your additions
-]
-```
-
-### Adjusting ML Sensitivity
-The model sensitivity can be adjusted by modifying the anomaly threshold or retraining with different parameters.
-
-## � Troubleshooting
-
-### Common Issues
-
-**1. Kafka Connection Failed**
-   - Verify broker address and port
-   - Check network connectivity
-   - Ensure Kafka topics exist
-
-**2. APT Log Not Found**
-   - System might not be Debian/Ubuntu based
-   - Check if `/var/log/apt/history.log` exists
-   - Verify read permissions
-
-**3. Model Loading Error**
-   - Ensure `bruteforce_model.pkl` exists
-   - Check Python version compatibility
-   - Reinstall scikit-learn if needed
-
-**4. No Logs in kafka_sixty.log**
-   - Check if `bruteforce_parser.py` is running
-   - Verify log directory permissions
-   - Check Kafka topic has data
-
-**5. "No module named 'apt_analyzer'"**
 ```bash
-# Ensure all files are in the same directory
-ls -la *.py
-# Run from the correct directory
-cd /path/to/bruteforce/
+# Generate test logs
+python3 -m tests.test_log_parsing
+
+# Create suspicious SSH logs
+python3 -m tests.create_suspicious_logs
+
+# Create APT test logs
+python3 -m tests.create_apt_test
+
+# Run analysis on test data
+python3 -m src.bruteforce_detector
 ```
 
-**6. "Log file not found"**
-```bash
-# Check log file paths
-ls -la /home/primum/logs/
-# Ensure bruteforce_parser.py is running and creating logs
-```
+## 📝 Requirements
 
-**7. "Database locked"**
-```bash
-# Check if multiple processes are accessing the database
-ps aux | grep python3
-# Ensure proper file permissions
-chmod 666 /home/primum/logs/ip_tracking.db
-```
+- Python 3.8+
+- Required Python packages (see requirements.txt for exact versions):
+  - joblib==1.4.2
+  - kafka-python==2.2.10
+  - numpy==1.24.3
+  - pandas==1.5.3
+  - python-dateutil==2.9.0.post0
+  - scikit-learn==1.2.2
+  - pyyaml>=6.0.0
+- Linux system with APT package manager
+- Kafka cluster (if using real-time log collection)
 
-**8. "No suspicious activities found"**
-```bash
-# Check APT log paths exist
-ls -la /var/log/apt/
-# Verify suspicious package patterns match your environment
-```
-
-**9. "Kafka logs not being processed properly"**
-```bash
-# Test log parsing with your exact format
-python3 test_log_parsing.py
-
-# Enable debug mode in bruteforce_parser.py
-DEBUG = True
-
-# Check if logs are being written
-tail -f /home/primum/logs/kafka_sixty.log
-```
-
-### Debug Mode
-Enable debug output in `tester2.py`:
-```python
-DEBUG = True  # Set to True for verbose output
-
-# Or set debug for specific components
-apt_analyzer = APTAnalyzer(debug=True)
-```
-
-## 📈 Performance Considerations
-
-- **Memory Usage**: ~50-100MB for typical workloads (SQLite database with indexing for fast queries)
-- **CPU Usage**: Low, spikes during ML inference (ML model prediction is lightweight - Isolation Forest)
-- **Disk I/O**: Minimal, mainly log file operations (automatic cleanup of old records - configurable retention)
-- **Network**: Kafka connection bandwidth dependent (minimal impact, processes local log files)
-
-## 🔒 Security Considerations
-
-- **Permissions**: Run with appropriate user permissions
-- **Log Retention**: Implement log rotation for disk space management (for long-term deployments)
-- **Network Security**: Secure Kafka communications if needed
-- **Alert Integration**: Consider integrating with SIEM systems
-- **File Permissions**: Ensure log files and database have appropriate permissions
-- **Access Control**: Restrict access to threat intelligence database
-- **Data Retention**: Configure appropriate retention policies for compliance
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes / Add tests for new functionality
-4. Test thoroughly
-5. Submit a pull request
-
-## � License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
+## 🤝 Support
 
 For issues and questions:
-1. Check the troubleshooting section
-2. Review logs for error messages / Enable debug mode for detailed logging
-3. Verify all dependencies are installed
-4. Check file permissions and paths / Submit issues with complete error traces
-
-## 📚 Technical Details
-
-### Log Format Support
-The system supports complex log formats like:
-```
-Jun 24 12:48:42 log-collector web_auth 2025-06-13T08:34:32+05:30 webserver webauth 2025-06-13T08:34:32.775864+05:30 webserver sshd[482432]: Failed password for invalid user hjames from 10.129.6.192 port 53655 ssh2
-```
-
-### Feature Engineering
-The ML model uses behavioral features rather than signature-based detection:
-- **Volume-based**: Number of attempts in time window
-- **Diversity-based**: Variety of usernames attempted
-- **Pattern-based**: Sequence of failed/successful attempts
-- **Context-based**: Known vs unknown IP addresses
-
-### APT Log Parsing
-Supports standard APT history log format:
-```
-Start-Date: 2025-06-25  14:30:15
-Commandline: apt install nmap
-Install: nmap:amd64 (7.80+dfsg1-2build1)
-End-Date: 2025-06-25  14:30:18
-```
+1. Check log files for errors
+2. Verify all dependencies are installed
+3. Check file permissions and paths
+4. Enable debug mode for detailed logging: `DEBUG = True` in Python files
 
 ---
 
-**Last Updated**: June 25, 2025  
 **Version**: 2.0  
-**Author**: Security Team
-
-## 📊 Usage Examples
-
-### Basic Detection
-```bash
-# Run detection on current logs
-python3 tester2.py
-```
-
-### Database Management
-```bash
-# View database statistics
-python3 db_manager.py --stats
-
-# Show recent anomalies (last 24 hours)
-python3 db_manager.py --recent 24
-
-# Show critical threats only
-python3 db_manager.py --critical 24
-
-# Export threat data to JSON
-python3 db_manager.py --export 24 --output threats.json
-
-# Cleanup old records (older than 7 days)
-python3 db_manager.py --cleanup 7
-```
-
-### Monitoring & Automation
-```bash
-# Add to crontab for automated detection every minute
-*/1 * * * * cd /path/to/bruteforce && python3 tester2.py >> /var/log/bruteforce_detection.log 2>&1
-
-# Monitor critical threats every 5 minutes
-*/5 * * * * cd /path/to/bruteforce && python3 db_manager.py --critical 1 >> /var/log/critical_threats.log 2>&1
-```
-
-## 🔍 Understanding Output
-
-### Normal Detection Output
-```
-Predictions (−1 = anomaly, 1 = normal): [1, 1, -1]
-192.168.1.100 → ✅ Normal
-192.168.1.101 → ✅ Normal
-10.129.6.192 → ⚠️ Anomaly
-  - Attempts: 5
-  - Unique users: 3
-  - Invalid user attempts detected
-  - Users attempted: admin, root, test
-```
-
-### Critical Threat Detection
-```
-🚨 CRITICAL: Suspicious package activities found for 10.129.6.192!
-
-🔍 SUSPICIOUS PACKAGE ACTIVITIES DETECTED:
-==================================================
-⏰ Time: 2025-06-24 14:30:15
-🎯 Action: Install
-📦 Packages: nmap masscan hydra
-📋 Source: apt-history
-------------------------------
-```
-
-### Database Statistics
-```
-📈 DATABASE STATISTICS:
-Total tracked IPs: 15
-Recent activity (24h): 3
-Threat levels: {1: 10, 3: 5}
-```
-
-## ⚙️ Configuration Options
-
-### APT Analyzer Configuration
-```python
-# Customize suspicious package patterns
-suspicious_patterns = [
-    r'nmap', r'masscan', r'hydra', r'john', r'hashcat',
-    r'metasploit', r'sqlmap', r'nikto', r'custom_pattern'
-]
-
-# Customize log paths
-apt_log_paths = [
-    '/var/log/apt/history.log',
-    '/var/log/apt/history.log.1',
-    '/custom/log/path.log'
-]
-```
-
-### Time Window Settings
-```python
-# In tester2.py
-recent_anomalous_ips = ip_tracker.get_recent_anomalous_ips(hours=6)  # SSH tracking window
-apt_activities = apt_analyzer.analyze_ip_activity(ip, time_window_hours=8)  # APT analysis window
-
-# In ip_tracker.py
-ip_tracker.cleanup_old_records(days=7)  # Database retention
-```
-
-## 🚨 Alert Integration
-
-### Email Alerts (Example)
-```python
-# Add to tester2.py after critical threat detection
-if critical_threats:
-    import smtplib
-    from email.mime.text import MIMEText
-    
-    msg = MIMEText(f"Critical threats detected: {', '.join(critical_threats)}")
-    msg['Subject'] = 'Security Alert: Critical Threats Detected'
-    msg['From'] = 'security@company.com'
-    msg['To'] = 'admin@company.com'
-    
-    with smtplib.SMTP('localhost') as s:
-        s.send_message(msg)
-```
-
-### Slack Integration (Example)
-```python
-# Add webhook notification
-import requests
-import json
-
-webhook_url = "https://hooks.slack.com/your/webhook/url"
-message = {
-    "text": f"🚨 Critical Security Threat Detected",
-    "attachments": [{
-        "color": "danger",
-        "fields": [{
-            "title": "Affected IPs",
-            "value": ", ".join(critical_threats),
-            "short": True
-        }]
-    }]
-}
-
-requests.post(webhook_url, data=json.dumps(message))
-```
+**Last Updated**: July 5, 2025

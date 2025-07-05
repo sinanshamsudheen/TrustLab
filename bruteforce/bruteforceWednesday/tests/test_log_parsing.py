@@ -5,7 +5,18 @@ Test script to verify log parsing with your exact log format
 
 import re
 import os
+import sys
 from datetime import datetime
+
+# Add project root to path to make imports work
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from src.config_loader import Config
+
+# Initialize configuration
+config = Config()
 
 # Same regex patterns as in bruteforce_parser.py
 LOG_CONTENT_REGEX = re.compile(r'webserver\s+sshd\[\d+\]:\s*(.+)$')
@@ -54,8 +65,9 @@ def test_log_parsing():
 def create_test_kafka_sixty_file():
     """Create a test kafka_sixty.log file with properly formatted logs"""
     
-    # Ensure directory exists
-    os.makedirs("/home/primum/logs", exist_ok=True)
+    # Use local logs directory we have permission for
+    logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+    os.makedirs(logs_dir, exist_ok=True)
     
     current_time = datetime.now()
     
@@ -69,12 +81,15 @@ def create_test_kafka_sixty_file():
     ]
     
     # Write to kafka_sixty.log
-    with open("/home/primum/logs/kafka_sixty.log", "w") as f:
+    log_file = os.path.join(logs_dir, "kafka_sixty.log")
+    with open(log_file, "w") as f:
         for log in clean_logs:
             f.write(log + "\n")
     
-    print(f"\n✅ Created test kafka_sixty.log with {len(clean_logs)} entries")
-    print("Now you can run: python3 tester2.py")
+    print(f"\n✅ Created test kafka_sixty.log at {log_file} with {len(clean_logs)} entries")
+    print("Now you can run: python3 bruteforce_detector.py")
+    # Return the log file path for convenience
+    return log_file
 
 if __name__ == "__main__":
     test_log_parsing()

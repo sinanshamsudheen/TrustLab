@@ -1,10 +1,26 @@
+#!/usr/bin/env python3
+"""
+Utility script to inspect a trained model's structure and parameters
+"""
 import joblib
 import sys
+import os
 from pprint import pprint
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator
 
+# Add project root to path to make imports work
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from src.config_loader import Config
+
+# Initialize configuration
+config = Config()
+
 def print_model_details(model, indent=0):
+    """Print details of a model object"""
     prefix = " " * indent
     print(f"{prefix}Type: {type(model)}")
     
@@ -33,8 +49,11 @@ def print_model_details(model, indent=0):
         for key in keys:
             print(f"{prefix}- {key}: {type(model.__dict__[key])}")
 
-# pkl_path = 'bruteforce_model.pkl'  # Default path, can be overridden by command line argument  
-def main(pkl_path):
+def main(pkl_path=None):
+    """Inspect a model file"""
+    if pkl_path is None:
+        pkl_path = config.get('paths.models.bruteforce_model')
+        
     try:
         model = joblib.load(pkl_path)
         print(f"\nLoaded model from: {pkl_path}")
@@ -43,7 +62,7 @@ def main(pkl_path):
         print(f"❌ Failed to load model: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python inspect_model_pkl.py <path_to_model.pkl>")
-    else:
+    if len(sys.argv) > 1:
         main(sys.argv[1])
+    else:
+        main()

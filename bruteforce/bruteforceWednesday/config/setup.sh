@@ -6,17 +6,21 @@ Setup script for SSH Brute Force Detection & APT Correlation System
 echo "🔧 echo "🚀 System is ready to use!"
 echo ""
 echo "💡 Quick Start:"
-echo "  1. Verify setup: python3 verify_setup.py"
-echo "  2. Start log collection: python3 bruteforce_parser.py"
-echo "  3. In another terminal, run: python3 tester2.py" 
-echo "  4. For testing without Kafka: python3 test_log_parsing.py && python3 tester2.py"g up SSH Brute Force Detection & APT Correlation System..."
+echo "  1. Verify setup: python3 -m config.verify_setup"
+echo "  2. Start services: ./config/trustlab_service.sh"
+echo "  3. Manual detection: python3 main.py --detect"
+echo "  4. Start monitoring: python3 main.py --monitor"
+echo "  5. For testing: python3 -m tests.test_log_parsing && python3 -m tests.create_suspicious_logs && python3 -m src.bruteforce_detector"g up SSH Brute Force Detection & APT Correlation System..."
+
+# Move to project root
+cd "$(dirname "$0")/.."
 
 # Make Python scripts executable
-chmod +x bruteforce_parser.py
-chmod +x tester2.py
-chmod +x apt_analyzer.py
-chmod +x test_log_parsing.py
-chmod +x verify_setup.py
+chmod +x src/*.py
+chmod +x tests/*.py
+chmod +x config/*.py
+chmod +x config/*.sh
+chmod +x main.py
 
 # Create necessary directories
 echo "📁 Creating log directories..."
