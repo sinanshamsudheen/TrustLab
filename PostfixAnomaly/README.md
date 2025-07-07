@@ -36,35 +36,71 @@ An improved version of the unified Kafka consumer with real-time anomaly detecti
 
 ## Setup
 
-1. **Run setup script as root (installs to /opt/PostfixAnomaly):**
+1. **Clone the repository and navigate to the project directory:**
    ```bash
-   sudo ./setup.sh
+   # Clone the repository
+   git clone https://github.com/sinanshamsudheen/TrustLab.git
+   
+   # Navigate to the PostfixAnomaly directory
+   cd TrustLab/PostfixAnomaly
    ```
 
-2. **Check configuration:**
-   Edit `/opt/PostfixAnomaly/config/config.yaml` to update:
+2. **Install Miniconda and set up Python environment:**
+   ```bash
+   # Download the Miniconda installer
+   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+   
+   # Run the installer (say yes at the last question to initialize Miniconda)
+   bash Miniconda3-latest-Linux-x86_64.sh
+   
+   # Update your current shell session to use Miniconda
+   source ~/.bashrc
+   
+   # Create a Python 3.10.10 environment
+   conda create -n py31010 python=3.10.10
+   
+   # Activate the environment
+   conda activate py31010
+   ```
+
+3. **Install required packages:**
+   ```bash
+   # Install Python dependencies from requirements.txt
+   pip install -r requirements.txt
+   ```
+
+4. **Run setup script:**
+   ```bash
+   ./setup.sh
+   ```
+
+5. **Check configuration:**
+   Edit `config/config.yaml` to update:
    - Kafka broker address
    - Output directory paths
    - Anomaly detection thresholds
 
-3. **Run the detector:**
+6. **Run the detector:**
    ```bash
-   # From any directory
-   anomalypostfix
+   # Ensure you're in the project directory and your conda environment is activated
+   conda activate py31010
    
-   # Or from the installation directory
-   /opt/PostfixAnomaly/run.sh
+   # Run the application
+   ./run.sh
    ```
 
-4. **Run as a service (optional):**
+7. **Run as a service (optional):**
    ```bash
-   sudo /opt/PostfixAnomaly/linux/service_manager.sh install
+   # Install the service
+   sudo ./linux/service_manager.sh install
+   
+   # Start the service
    sudo systemctl start anomalypostfix
    ```
 
-5. **Check service status:**
+8. **Check service status:**
    ```bash
-   sudo /opt/PostfixAnomaly/linux/service_status.sh
+   sudo ./linux/service_status.sh
    ```
 
 ## Configuration (config.yaml)
@@ -90,10 +126,40 @@ kafka:
 # Anomaly detection settings
 anomaly:
   threshold:
-    high: -0.1
-    medium: -0.05
-    low: 0
+    high: -0.1    # High severity anomaly
+    medium: -0.05 # Medium severity anomaly
+    low: 0        # Low severity anomaly
 ```
+
+## Adjusting Model Sensitivity
+
+You can adjust the model's sensitivity without retraining by modifying the threshold values in `config.yaml`. The thresholds determine how the model classifies anomalies based on the anomaly score:
+
+### Threshold Guide
+
+- **Lower values** (more negative) = **Less sensitive**:
+  - Fewer events will be flagged as anomalies
+  - Reduces false positives
+  - Only extremely unusual events will be detected
+  - Example: Change `high: -0.1` to `high: -0.2`
+
+- **Higher values** (less negative or positive) = **More sensitive**:
+  - More events will be flagged as anomalies
+  - May increase false positives
+  - Catches more borderline unusual events
+  - Example: Change `high: -0.1` to `high: -0.05`
+
+### Recommended Adjustments
+
+1. **For high-traffic environments** with many false positives:
+   - Decrease sensitivity by lowering threshold values
+   - Example: `high: -0.15, medium: -0.1, low: -0.05`
+
+2. **For critical security environments** where missing anomalies is a concern:
+   - Increase sensitivity by raising threshold values
+   - Example: `high: -0.05, medium: 0, low: 0.05`
+
+3. **For initial tuning**, make small adjustments (±0.02) and observe the detection rate for a few days before making further changes.
 
 ## Output Files
 
