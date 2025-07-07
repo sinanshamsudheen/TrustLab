@@ -4,8 +4,10 @@
 #
 
 # Directory where scripts are located
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-LOG_DIR="/var/log/trustlab"
+PROJECT_NAME="BruteforceAnomaly"
+PROJECT_ROOT="/opt/$PROJECT_NAME"
+SCRIPT_DIR="$PROJECT_ROOT/config"
+LOG_DIR="$PROJECT_ROOT/logs"
 
 # Function to log messages with timestamps
 log() {
@@ -16,9 +18,9 @@ log() {
 mkdir -p "$LOG_DIR"
 
 # Stop APT Monitor
-if pgrep -f "apt_monitor.py" > /dev/null; then
+if pgrep -f "python3 $PROJECT_ROOT/main.py --monitor" > /dev/null; then
     log "Stopping APT Monitor service..."
-    pkill -f "apt_monitor.py"
+    pkill -f "python3 $PROJECT_ROOT/main.py --monitor"
     log "APT Monitor service stopped"
     
     # Remove PID file if it exists

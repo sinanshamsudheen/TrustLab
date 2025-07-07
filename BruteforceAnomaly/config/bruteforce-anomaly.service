@@ -1,0 +1,15 @@
+[Unit]
+Description=TrustLab SSH Brute Force Detection & APT Correlation System
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/BruteforceAnomaly
+ExecStart=/opt/BruteforceAnomaly/config/trustlab_service.sh
+ExecStop=/opt/BruteforceAnomaly/config/stop_trustlab_service.sh
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

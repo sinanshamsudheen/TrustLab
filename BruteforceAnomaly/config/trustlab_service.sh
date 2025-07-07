@@ -5,8 +5,9 @@
 #
 
 # Directory where scripts are located
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_NAME="BruteforceAnomaly"
+PROJECT_ROOT="/opt/$PROJECT_NAME"
+SCRIPT_DIR="$PROJECT_ROOT/config"
 LOG_DIR="$PROJECT_ROOT/logs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 

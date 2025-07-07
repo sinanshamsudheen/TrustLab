@@ -47,20 +47,35 @@ A security monitoring system that detects SSH brute force attacks and correlates
 
 ```bash
 # Clone the repository
-cd trustlab-security
+git clone https://github.com/yourusername/BruteforceAnomaly.git
 
-# Run the setup script (installs dependencies and creates required directories)
-./config/setup.sh
+# Run the setup script which will install the project to /opt/BruteforceAnomaly
+cd BruteforceAnomaly
+sudo ./config/setup.sh
 
-# Alternative manual installation:
-# Install dependencies
-pip install -r requirements.txt
+# The system is now installed at /opt/BruteforceAnomaly
 
-# Make scripts executable
-chmod +x config/*.py config/*.sh
+# Start the service using systemd
+sudo systemctl start bruteforce-anomaly
 
-# Verify installation
-python3 config/verify_setup.py
+# Enable the service to start at boot
+sudo systemctl enable bruteforce-anomaly
+```
+
+## 🔍 Verification and Testing
+
+```bash
+# Verify that all dependencies are correctly installed
+python3 /opt/BruteforceAnomaly/config/verify_setup.py
+
+# Run test log parsing 
+python3 /opt/BruteforceAnomaly/tests/test_log_parsing.py
+
+# Create test suspicious logs
+python3 /opt/BruteforceAnomaly/tests/create_suspicious_logs.py
+
+# Test the detection system
+python3 /opt/BruteforceAnomaly/main.py --detect
 ```
 
 ## 🚀 Running the System

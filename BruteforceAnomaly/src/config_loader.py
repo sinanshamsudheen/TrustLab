@@ -23,8 +23,14 @@ class Config:
         """Initialize the configuration if not already done"""
         if self._initialized:
             return
+        
+        # Check if the code is running from the installed location
+        if os.path.exists("/opt/BruteforceAnomaly"):
+            self.project_root = "/opt/BruteforceAnomaly"
+        else:
+            # Fallback to the development location
+            self.project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             
-        self.project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.config_path = os.path.join(self.project_root, "config", "config.yaml")
         self.config = {}
         
