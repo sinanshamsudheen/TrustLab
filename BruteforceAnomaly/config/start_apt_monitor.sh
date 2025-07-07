@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Start the APT monitoring service
-SCRIPT_DIR="$(dirname "$0")"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-
-cd "$PROJECT_ROOT"
-python3 main.py --monitor >> logs/apt_monitor.log 2>&1 &
-echo "APT Monitor started with PID $!"

@@ -73,8 +73,8 @@ except Exception as e:
     print('   The system will work with test data')
 " 2>/dev/null
 
-# Create executable wrapper script for easy access
-echo "🔗 Creating wrapper script for easy access..."
+# Create executable wrapper script for easy access (optional but convenient)
+echo "🔗 Creating wrapper script for easy CLI access..."
 cat > /tmp/bruteforce-anomaly << EOF
 #!/bin/bash
 python3 "$TARGET_DIR/main.py" "\$@"
@@ -82,15 +82,25 @@ EOF
 sudo mv /tmp/bruteforce-anomaly /usr/local/bin/bruteforce-anomaly
 sudo chmod +x /usr/local/bin/bruteforce-anomaly
 
-# Install systemd service (after updating paths in the service file)
+# Install systemd service
 echo "🔧 Installing systemd service..."
 if [ -f "$TARGET_DIR/config/bruteforce-anomaly.service" ]; then
     # Create a temporary modified service file with updated paths
-    sed "s|/opt/$PROJECT_NAME|$TARGET_DIR|g" "$TARGET_DIR/config/bruteforce-anomaly.service" > /tmp/bruteforce-anomaly.service
+    sed "s|%INSTALLATION_PATH%|$TARGET_DIR|g" "$TARGET_DIR/config/bruteforce-anomaly.service" > /tmp/bruteforce-anomaly.service
     sudo cp /tmp/bruteforce-anomaly.service /etc/systemd/system/
     sudo systemctl daemon-reload
-    echo "✅ Systemd service installed. You can start it with: sudo systemctl start bruteforce-anomaly"
-    echo "   To enable it on boot: sudo systemctl enable bruteforce-anomaly"
+    echo "✅ Systemd service installed."
+    
+    # Create log directories for the service
+    echo "📁 Creating log directories for the service..."
+    mkdir -p "$TARGET_DIR/logs"
+    
+    # Setting correct permissions for the service
+    echo "🔑 Setting correct permissions..."
+    sudo chown -R $(whoami):$(whoami) "$TARGET_DIR"
+    
+    echo "✅ System is ready to be started with: sudo systemctl start bruteforce-anomaly"
+    echo "   Enable at boot with: sudo systemctl enable bruteforce-anomaly"
 else
     echo "⚠️ Service file not found. Skipping systemd service installation."
 fi
@@ -99,11 +109,9 @@ echo "✅ Setup completed!"
 echo ""
 echo "📚 Usage Examples:"
 echo "  Verify system setup:        python3 $TARGET_DIR/config/verify_setup.py"
-echo "  Start log collection:       python3 $TARGET_DIR/src/bruteforce_parser.py"
 echo "  Run anomaly detection:      python3 $TARGET_DIR/main.py --detect"
 echo "  Start monitoring:           python3 $TARGET_DIR/main.py --monitor"
 echo "  Test log parsing:           python3 $TARGET_DIR/tests/test_log_parsing.py"
-echo "  Or simply use:              python3 $TARGET_DIR/main.py --detect/--monitor"
 echo ""
 echo "🔍 System Components:"
 echo "  bruteforce_parser.py  - Kafka log consumer (real-time)"
@@ -112,9 +120,17 @@ echo "  apt_monitor.py        - APT monitoring service"
 echo ""
 echo "🚀 System is ready to use!"
 echo ""
-echo "💡 Quick Start:"
+echo "💡 Quick Start with Systemd Service (RECOMMENDED):"
 echo "  1. Verify setup: python3 $TARGET_DIR/config/verify_setup.py"
-echo "  2. Start services: $TARGET_DIR/config/trustlab_service.sh"
-echo "  3. Manual detection: $TARGET_DIR/main.py --detect"
-echo "  4. Start monitoring: $TARGET_DIR/main.py --monitor"
-echo "  5. For testing: python3 -m tests.test_log_parsing && python3 -m tests.create_suspicious_logs && python3 -m src.bruteforce_detector"
+echo "  2. Start the service: sudo systemctl start bruteforce-anomaly"
+echo "  3. Enable service at boot: sudo systemctl enable bruteforce-anomaly"
+echo "  4. Check service status: sudo systemctl status bruteforce-anomaly"
+echo ""
+echo "📋 Service Management Commands:"
+echo "  Start:    sudo systemctl start bruteforce-anomaly"
+echo "  Stop:     sudo systemctl stop bruteforce-anomaly"
+echo "  Restart:  sudo systemctl restart bruteforce-anomaly"
+echo "  Status:   sudo systemctl status bruteforce-anomaly"
+echo "  Enable:   sudo systemctl enable bruteforce-anomaly"
+echo "  Disable:  sudo systemctl disable bruteforce-anomaly"
+echo "  View logs: sudo journalctl -u bruteforce-anomaly"

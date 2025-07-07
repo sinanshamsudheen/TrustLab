@@ -12,11 +12,9 @@ A security monitoring system that detects SSH brute force attacks and correlates
 ├── config/                # Configuration and service files
 │   ├── config.yaml        # Centralized configuration file
 │   ├── setup.sh
-│   ├── start_apt_monitor.sh
-│   ├── stop_trustlab_service.sh
-│   ├── trustlab_service.sh
-│   ├── userlist.json
-│   └── verify_setup.py
+│   ├── bruteforce-anomaly.service  # Systemd service file
+│   ├── userlist.json      # User/IP correlation database
+│   └── verify_setup.py    # System verification tool
 ├── logs/                  # Log files
 │   ├── apt_monitor.log
 │   ├── apt_history_test.log
@@ -47,10 +45,10 @@ A security monitoring system that detects SSH brute force attacks and correlates
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/BruteforceAnomaly.git
+git clone https://github.com/sinanshamsudheen/TrustLab.git
 
 # Run the setup script which will configure the project in its current location
-cd BruteforceAnomaly
+cd TrustLab/BruteforceAnomaly
 sudo ./config/setup.sh
 
 # The system is now ready to use from the current directory
@@ -80,14 +78,20 @@ python3 ./main.py --detect
 
 ## 🚀 Running the System
 
-### Option 1: Using the Service Script
+### Option 1: Using Systemd Service (Recommended for Production)
 
 ```bash
-# Start both services with the full trustlab service script
-./config/trustlab_service.sh
+# Start the service (runs in background even after logout)
+sudo systemctl start bruteforce-anomaly
 
-# To stop the services
-./config/stop_trustlab_service.sh
+# Check service status
+sudo systemctl status bruteforce-anomaly
+
+# Stop the service
+sudo systemctl stop bruteforce-anomaly
+
+# Enable service to start automatically at boot
+sudo systemctl enable bruteforce-anomaly
 ```
 
 ### Option 2: Using the Main Entry Point
@@ -103,10 +107,10 @@ python3 main.py --monitor
 ### Option 3: Individual Components
 
 ```bash
-# Start the APT monitoring service (runs in background)
-./config/start_apt_monitor.sh
+# Start the APT monitoring service manually (runs in background)
+python3 main.py --monitor &
 
-# Run SSH brute force detection (runs once)
+# Run SSH brute force detection once
 python3 -m src.bruteforce_detector
 ```
 
@@ -121,17 +125,19 @@ python3 -m src.bruteforce_detector
 - **config/config.yaml**: Configuration file with all system settings
 - **config/userlist.json**: Correlation database linking suspicious IPs to usernames
 
-### Service Scripts
-- **config/trustlab_service.sh**: Starts all monitoring services
-- **config/stop_trustlab_service.sh**: Stops all monitoring services
-- **config/start_apt_monitor.sh**: Starts only the APT monitoring service
+### Service Management
+- **config/bruteforce-anomaly.service**: Systemd service configuration file
+- **systemd**: Manages the service, handles auto-restart and boot persistence
+- **cron**: Runs the bruteforce detector every minute (set up automatically)
+- **main.py --monitor**: Sets up cron jobs and runs APT monitoring
+- **main.py --detect**: Runs one-time bruteforce detection scan
 
 ### Support Files
 - **artifacts/bruteforce_model.pkl**: Pre-trained ML model (IsolationForest)
 - **artifacts/bruteforce_training.ipynb**: Jupyter notebook for model training
 - **requirements.txt**: Python package dependencies
-- **setup.sh**: Setup script for dependencies
-- **verify_setup.py**: System verification script
+- **config/setup.sh**: Installation and systemd service setup script
+- **config/verify_setup.py**: System verification script
 
 ## 🏗️ System Architecture
 
@@ -142,23 +148,31 @@ python3 -m src.bruteforce_detector
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                                         │
                                                         ▼
-                                               ┌─────────────────┐
-                                               │bruteforce_detect│
-                                               │    or.py        │◀────┐
-                                               └────────┬────────┘     │
-                                                        │              │
-                                                        ▼              │
-                   ┌─────────────────┐        ┌─────────────────┐     │
-                   │   userlist.json │◀───────│  apt_analyzer.py│     │
-                   │ (IP-User Map)   │        │                 │     │
-                   └─────────────────┘        └────────┬────────┘     │
-                            │                          │              │
-                            │                          ▼              │
-                            │                 ┌─────────────────┐     │
-                            └────────────────▶│  apt_monitor.py │─────┘
-                                              │ (Continuous     │
-                                              │  Monitoring)    │
-                                              └─────────────────┘
+                               ┌─────────────────────────────────────┐
+                               │       Systemd Service               │
+                               │    (bruteforce-anomaly.service)     │
+                               └─────────────┬───────────────────────┘
+                                             │
+                                             │ Controls
+                                             ▼
+                                ┌────────────────────────────┐
+                                │         main.py            │
+                                │  --monitor / --detect      │
+                                └───────┬────────────────────┘
+                                        │
+                      ┌─────────────────┴─────────────────┐
+                      │                                   │
+                      ▼                                   ▼
+┌──────────────────────────┐                  ┌─────────────────────────┐
+│  bruteforce_detector.py  │◀────┐            │     apt_monitor.py      │
+│  (Runs via cron job)     │     │            │ (Continuous monitoring) │
+└───────────┬──────────────┘     │            └────────────┬────────────┘
+            │                    │                         │
+            ▼                    │                         │
+┌─────────────────────┐          │            ┌────────────┴────────────┐
+│    apt_analyzer.py  │──────────┘            │      userlist.json      │
+│                     │                       │    (IP-User Map)        │
+└─────────────────────┘                       └─────────────────────────┘
 ```
 
 ## 🔍 How It Works

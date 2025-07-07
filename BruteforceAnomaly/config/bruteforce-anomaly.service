@@ -6,10 +6,11 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=%INSTALLATION_PATH%
-ExecStart=%INSTALLATION_PATH%/config/trustlab_service.sh
-ExecStop=%INSTALLATION_PATH%/config/stop_trustlab_service.sh
+ExecStart=/usr/bin/python3 %INSTALLATION_PATH%/main.py --monitor
 Restart=on-failure
 RestartSec=5s
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
