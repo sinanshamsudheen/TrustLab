@@ -4,21 +4,19 @@ echo "Starting AnomalyPostfix V2 Anomaly Detector..."
 echo "============================================="
 echo
 
-# Define the installation directory
-INSTALL_DIR="/opt/PostfixAnomaly"
-
-# Check if installation directory exists
-if [ ! -d "$INSTALL_DIR" ]; then
-    echo "⚠️ Installation directory $INSTALL_DIR not found!"
-    echo "Please run setup.sh first to complete the installation."
-    exit 1
-fi
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+INSTALL_DIR="$SCRIPT_DIR"
 
 # Go to the installation directory
 cd "$INSTALL_DIR"
 
 echo "Working directory: $(pwd)"
 echo
+
+# Ensure we have proper permissions for output and logs directories
+mkdir -p "$INSTALL_DIR/output" "$INSTALL_DIR/logs"
+chmod -R 755 "$INSTALL_DIR/output" "$INSTALL_DIR/logs"
 
 # Go to the src directory
 cd "$INSTALL_DIR/src"

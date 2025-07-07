@@ -12,6 +12,10 @@ echo
 echo "Creating directories..."
 mkdir -p output logs
 
+# Set proper permissions for output and logs directories
+echo "Setting directory permissions..."
+chmod -R 755 output logs
+
 # Make all scripts executable
 echo "Setting script permissions..."
 find . -name "*.sh" -exec chmod +x {} \;

@@ -1,11 +1,12 @@
 #!/bin/bash
 # AnomalyPostfix V2 Service Manager for Linux
 
-# Define the installation directory
-INSTALL_DIR="/opt/PostfixAnomaly"
+# Get the directory where this script is located and navigate to parent
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+INSTALL_DIR="$(dirname "$SCRIPT_DIR")"
 
 SERVICE_NAME="anomalypostfix"
-SERVICE_FILE="${INSTALL_DIR}/linux/anomalypostfix.service"
+SERVICE_FILE="${SCRIPT_DIR}/anomalypostfix.service"
 SERVICE_DEST="/etc/systemd/system/${SERVICE_NAME}.service"
 
 function show_usage {
