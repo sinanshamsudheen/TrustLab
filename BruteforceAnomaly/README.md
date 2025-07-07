@@ -1,6 +1,18 @@
 # SSH Brute Force Detection & APT Correlation System
 
-A security monitoring system that detects SSH brute force attacks and correlates them with suspicious APT package installations.
+A comprehensive security monitoring system that uses machine learning to detect SSH brute force attacks and correlates them with suspicious APT (Advanced Package Tool) package installations. This system helps security teams identify potential advanced persistent threats by connecting unusual login patterns with subsequent suspicious software installations.
+
+## 🔐 Project Overview
+
+This project provides:
+
+1. **SSH Brute Force Detection**: Uses machine learning (Isolation Forest) to identify anomalous login patterns in SSH logs
+2. **APT Activity Monitoring**: Monitors package installations for potentially malicious software
+3. **Threat Correlation**: Links suspicious IPs/users from brute force attempts to subsequent package installations
+4. **Real-time Alerts**: Notifies security teams when correlated threats are detected
+5. **Testing Framework**: Includes comprehensive test scripts to simulate attacks and validate system components
+
+The system is designed to help security professionals detect post-exploitation activities where an attacker may gain access via brute force and then install tools for lateral movement or persistence.
 
 ## 📁 Project Structure
 
@@ -67,26 +79,95 @@ sudo systemctl enable bruteforce-anomaly
 
 ## 🔍 Verification and Testing
 
+### Initial System Verification
+
 ```bash
 # Verify that all dependencies are correctly installed
 python3 ./config/verify_setup.py
+```
 
-# Run test log parsing 
-python3 ./tests/test_log_parsing.py
+This command checks:
+- If all required Python packages are installed
+- If configuration files are accessible
+- If the project structure is correct
+- If core modules can be imported
 
-# Create test suspicious logs
+### Testing Bruteforce Detection
+
+```bash
+# Step 1: Create test suspicious logs
 python3 ./tests/create_suspicious_logs.py
 
-# Test the detection system
+# Step 2: Run detection on the generated logs
+python3 ./tests/test_detection.py
+
+# Step 3: Alternative: Run main detection system
 python3 ./main.py --detect
 ```
 
-## 🚀 Running the System
+The first command generates realistic SSH login failure patterns that simulate a brute-force attack. The second command runs the anomaly detection model against these logs and displays detailed results, showing how the system identifies suspicious patterns.
 
-### Option 1: Using Systemd Service (Recommended for Production)
+### Testing APT Analysis and Correlation
 
 ```bash
-# Start the service (runs in background even after logout)
+# Step 1: Create test suspicious user records
+python3 ./tests/create_apt_test.py
+
+# Step 2: Test the APT monitoring functionality
+python3 ./tests/test_apt_monitor.py
+
+# Step 3: Run the APT monitor service
+python3 ./main.py --monitor
+```
+
+These commands:
+1. Generate simulated APT (Advanced Package Tool) installation logs for suspicious users
+2. Test if the APT monitor can correctly initialize and access the userlist
+3. Start the monitoring service that watches for suspicious package installations from flagged users
+
+### Advanced Testing with Log Parsing
+
+```bash
+# Test the log parsing functionality
+python3 ./tests/test_log_parsing.py
+
+# Inspect the machine learning model
+python3 ./tests/inspect_model.py
+```
+
+These tools provide insights into how the system processes SSH logs and how the machine learning model works.
+
+## 🚀 Running the System
+
+### Option 1: Using Start and Stop Scripts (Recommended)
+
+```bash
+# Start the detection and monitoring services
+./start.sh
+
+# Stop the detection and monitoring services
+./stop.sh
+```
+
+The start.sh script:
+1. Sets up a cron job to run the bruteforce detector every minute
+2. Asks if you want to start the APT monitoring service
+3. Uses systemd if available, or runs the service directly otherwise
+
+The stop.sh script:
+1. Removes the cron job for bruteforce detection
+2. Asks if you want to stop the APT monitoring service
+3. Stops the service gracefully via systemd or direct process termination
+
+This approach ensures that:
+1. The APT monitoring service runs continuously 
+2. The SSH brute force detection runs at regular intervals via cron
+3. Both components operate independently but share information via the userlist.json file
+
+### Option 2: Using Systemd Service Manually
+
+```bash
+# Start the APT monitoring service (runs in background even after logout)
 sudo systemctl start bruteforce-anomaly
 
 # Check service status
@@ -98,6 +179,8 @@ sudo systemctl stop bruteforce-anomaly
 # Enable service to start automatically at boot
 sudo systemctl enable bruteforce-anomaly
 ```
+
+Note: When using systemd directly, you'll need to set up the cron job for bruteforce detection separately.
 
 ### Option 2: Using the Main Entry Point
 
@@ -133,8 +216,8 @@ python3 -m src.bruteforce_detector
 ### Service Management
 - **config/bruteforce-anomaly.service**: Systemd service configuration file
 - **systemd**: Manages the service, handles auto-restart and boot persistence
-- **cron**: Runs the bruteforce detector every minute (set up automatically)
-- **main.py --monitor**: Sets up cron jobs and runs APT monitoring
+- **cron job**: Automatically runs the bruteforce detector every 60 seconds (set up by setup.sh)
+- **main.py --monitor**: Sets up and runs APT monitoring service
 - **main.py --detect**: Runs one-time bruteforce detection scan
 
 ### Support Files
@@ -304,23 +387,104 @@ time_window = config.get('detection.time_window_seconds')
 
 This centralized approach makes the system easy to configure without modifying code files.
 
-## 🚨 Testing
+## 🚨 Testing and Troubleshooting
 
-The system includes utilities for testing:
+The system includes comprehensive testing utilities designed to validate each component of the system. Follow these testing workflows to understand how the system works or to debug issues.
+
+### Testing Workflow for SSH Bruteforce Detection
+
+1. **Generate Test Data:**
+   ```bash
+   # Create simulated SSH brute force logs
+   python3 ./tests/create_suspicious_logs.py
+   ```
+   This creates log entries simulating SSH bruteforce attempts with various patterns:
+   - Multiple failed logins for the same user from a single IP
+   - Attempts to log in as different users from the same IP
+   - Invalid username attempts
+   - Password guessing patterns
+
+2. **Run Detection and Analyze Results:**
+   ```bash
+   # Test the detection system on generated logs
+   python3 ./tests/test_detection.py
+   ```
+   This will:
+   - Load the ML model (IsolationForest)
+   - Process the test logs
+   - Extract features (login attempts, unique users, failure patterns)
+   - Make anomaly predictions
+   - Output detection results with confidence scores
+   - Identify which IPs are flagged as suspicious
+
+3. **Run Full Detection Pipeline:**
+   ```bash
+   # Run the complete detection system
+   python3 ./main.py --detect
+   ```
+   This runs the full detection pipeline including:
+   - Log parsing
+   - Feature extraction
+   - Anomaly detection
+   - User-IP correlation
+   - APT correlation for detected anomalies
+
+### Testing Workflow for APT Correlation System
+
+1. **Create Test APT Logs:**
+   ```bash
+   # Generate simulated APT history logs with suspicious packages
+   python3 ./tests/create_apt_test.py
+   ```
+   This creates:
+   - Simulated APT history with timestamps
+   - Installation entries for potentially suspicious packages
+   - Links between users and package installations
+
+2. **Test the APT Monitoring System:**
+   ```bash
+   # Validate the APT monitoring functionality
+   python3 ./tests/test_apt_monitor.py
+   ```
+   This tests:
+   - Initialization of the APT monitor
+   - Access to the userlist database
+   - Correlation between flagged users and package installations
+   - Detection of suspicious package installations
+
+3. **Run the APT Monitor Service:**
+   ```bash
+   # Start the APT monitoring service
+   python3 ./main.py --monitor
+   ```
+   This runs the continuous monitoring service that:
+   - Watches the userlist.json file for flagged users
+   - Monitors APT history logs
+   - Alerts when suspicious users install suspicious packages
+
+### Advanced Testing Options
 
 ```bash
-# Generate test logs
-python3 -m tests.test_log_parsing
+# Test log parsing and formatting
+python3 ./tests/test_log_parsing.py
 
-# Create suspicious SSH logs
-python3 -m tests.create_suspicious_logs
+# Inspect the machine learning model features and parameters
+python3 ./tests/inspect_model.py
 
-# Create APT test logs
-python3 -m tests.create_apt_test
-
-# Run analysis on test data
-python3 -m src.bruteforce_detector
+# Test the entire project structure and imports
+python3 ./tests/test_structure.py
 ```
+
+### Understanding Test Output
+
+The test scripts output detailed information using these indicators:
+- ✅ Success indicators for passed tests
+- ❌ Failure indicators with error messages
+- ⚠️ Warning indicators for potential issues
+- 🔍 Detailed inspection results for model analysis
+- 🧪 Test execution indicators
+
+Review these outputs carefully to understand how the system is functioning or to identify issues.
 
 ## 📝 Requirements
 
@@ -367,7 +531,102 @@ sudo systemctl restart bruteforce-anomaly
 
 **Note:** Systemd requires absolute paths in service files. The setup script automatically uses absolute paths, but you may need to adjust them if your installation location changes.
 
+## 🧪 Complete Testing Guide
+
+This section provides a step-by-step guide for testing the entire system using the provided test scripts.
+
+### Step 1: Verify System Setup
+
+```bash
+# Check if all dependencies and paths are correctly set up
+python3 ./config/verify_setup.py
+```
+
+Ensure you see green checkmarks (✅) for all tests. If there are any failures (❌), fix them before proceeding.
+
+### Step 2: Test Project Structure and Core Imports
+
+```bash
+# Verify project structure and module imports
+python3 ./tests/test_structure.py
+```
+
+This validates that all directories exist and all core modules can be imported successfully.
+
+### Step 3: Generate Test Data
+
+```bash
+# Create suspicious SSH login logs
+python3 ./tests/create_suspicious_logs.py
+
+# Create simulated APT history logs
+python3 ./tests/create_apt_test.py
+```
+
+These commands create the test data needed for running the detection and monitoring systems. They will generate:
+- SSH logs with suspicious login patterns in `logs/kafka_sixty.log`
+- APT history logs with package installations in `logs/apt_history_test.log`
+
+### Step 4: Test Individual Components
+
+```bash
+# Test log parsing
+python3 ./tests/test_log_parsing.py
+
+# Test ML model analysis
+python3 ./tests/inspect_model.py
+
+# Test APT monitoring
+python3 ./tests/test_apt_monitor.py
+```
+
+These tests validate each component individually, helping you understand how they work or identify issues.
+
+### Step 5: Test Full Detection Pipeline
+
+```bash
+# Run full detection system on test data
+python3 ./main.py --detect
+```
+
+This command processes the test logs and detects any suspicious SSH login patterns. It will:
+1. Parse the SSH logs
+2. Extract features for the ML model
+3. Detect anomalies using the IsolationForest model
+4. Update the userlist.json with flagged IPs and users
+5. Check for suspicious APT activity correlated with flagged users
+
+### Step 6: Test Monitoring System
+
+```bash
+# Run the APT monitoring service
+python3 ./main.py --monitor
+```
+
+This starts the continuous monitoring service that watches for suspicious package installations by users who have been flagged from SSH brute force attempts.
+
+### Interpreting Test Results
+
+- **SSH Brute Force Detection**:
+  - The system will output predictions for each IP address (`-1` = anomaly, `1` = normal)
+  - For anomalies, it will show details like attempt counts, unique users tried, etc.
+  - It will select a username to monitor based on the attack patterns
+
+- **APT Correlation**:
+  - For detected anomalies, the system will check APT logs for suspicious activities
+  - If found, it will show details of suspicious package installations
+  - These correlations help identify potential post-exploitation activities
+
+### Testing Tips
+
+- **Generate Custom Test Data**: Modify the test scripts to create different attack patterns
+- **Adjust Detection Parameters**: Experiment with settings in `config.yaml`
+- **Debug Issues**: Enable debug logging by setting `DEBUG = True` in the Python files
+- **View Detailed Model Info**: Use `tests/inspect_model.py` to understand how the ML model works
+- **Test in Isolation**: Test each component separately before testing the full pipeline
+- **Simulate Real Attacks**: Create scenarios with increasing levels of sophistication
+
 ---
 
 **Version**: 2.0  
-**Last Updated**: July 5, 2025
+**Last Updated**: July 8, 2025
