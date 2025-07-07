@@ -22,9 +22,9 @@ import shap
 from kafka import KafkaConsumer
 
 # Configuration
-MODEL_FILE = 'anomaly_model_optimized.pkl'
-SCALER_FILE = 'anomaly_scaler_reduced.pkl'  
-FEATURES_FILE = 'selected_features.json'
+MODEL_FILE = 'New_anomaly_det.pkl'
+SCALER_FILE = 'New_scaler.pkl'
+FEATURES_FILE = 'new_selected_features.json'
 CONFIG_FILE = 'config/kafka_config.yaml'
 OUTPUT_DIR = '/home/primum/PostfixOutput'
 

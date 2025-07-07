@@ -41,18 +41,18 @@ else
 fi
 
 echo "🔍 Checking model files..."
-if [ ! -f anomaly_model_optimized.pkl ]; then
-  echo "❌ Missing anomaly_model_optimized.pkl"
+if [ ! -f New_anomaly_det.pkl ]; then
+  echo "❌ Missing New_anomaly_det.pkl"
   echo "Please copy model files from parent directory"
   exit 1
 fi
-if [ ! -f anomaly_scaler_reduced.pkl ]; then
-  echo "❌ Missing anomaly_scaler_reduced.pkl"
+if [ ! -f New_scaler.pkl ]; then
+  echo "❌ Missing New_scaler.pkl"
   echo "Please copy model files from parent directory"
   exit 1
 fi
-if [ ! -f selected_features.json ]; then
-  echo "❌ Missing selected_features.json"
+if [ ! -f new_selected_features.json ]; then
+  echo "❌ Missing new_selected_features.json"
   echo "Please copy model files from parent directory"
   exit 1
 fi
