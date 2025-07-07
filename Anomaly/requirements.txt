@@ -1,9 +1,0 @@
-joblib==1.4.2
-kafka-python==2.2.10
-numpy==1.24.3
-pandas==1.5.3
-pandas-ta==0.3.14b0
-python-dateutil==2.9.0.post0
-scikit-learn==1.2.2
-types-python-dateutil==2.9.0.20241206
-pyyaml>=6.0.0
