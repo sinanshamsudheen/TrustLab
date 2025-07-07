@@ -1,0 +1,89 @@
+{
+  "feature_groups": [
+    {
+      "name": "Text Features",
+      "description": "Features extracted from the text content using TF-IDF vectorization",
+      "processing": "TfidfVectorizer with max_features=5000",
+      "note": "These features are dynamically generated based on the vocabulary in the training data"
+    },
+    {
+      "name": "Engineered Features",
+      "description": "Additional features extracted from the original email text",
+      "features": [
+        {
+          "name": "text_length",
+          "description": "Total length of the email text in characters",
+          "type": "numeric"
+        },
+        {
+          "name": "word_count",
+          "description": "Total number of words in the email",
+          "type": "numeric"
+        },
+        {
+          "name": "sentence_count",
+          "description": "Number of sentences (counted by periods, exclamation marks, and question marks)",
+          "type": "numeric"
+        },
+        {
+          "name": "punctuation_count",
+          "description": "Number of punctuation marks (.,!?;:) in the text",
+          "type": "numeric"
+        },
+        {
+          "name": "uppercase_ratio",
+          "description": "Ratio of uppercase letters to total text length",
+          "type": "numeric",
+          "range": [0, 1]
+        },
+        {
+          "name": "unique_word_count",
+          "description": "Number of unique words in the email",
+          "type": "numeric"
+        },
+        {
+          "name": "stopword_ratio",
+          "description": "Ratio of stopwords to total word count",
+          "type": "numeric",
+          "range": [0, 1]
+        },
+        {
+          "name": "avg_word_len",
+          "description": "Average length of words in the email",
+          "type": "numeric"
+        }
+      ]
+    }
+  ],
+  "preprocessing": [
+    {
+      "step": "Text cleaning",
+      "operations": [
+        "Convert to lowercase",
+        "Remove newlines",
+        "Remove URLs",
+        "Remove HTML tags",
+        "Remove numbers",
+        "Remove punctuation",
+        "Remove extra whitespace"
+      ]
+    },
+    {
+      "step": "Feature extraction",
+      "operations": [
+        "TF-IDF vectorization for text features",
+        "Custom extraction of engineered features"
+      ]
+    },
+    {
+      "step": "Feature scaling",
+      "operations": [
+        "StandardScaler applied to engineered features"
+      ]
+    }
+  ],
+  "model_info": {
+    "primary_model": "Logistic Regression",
+    "feature_combination": "Horizontal stacking (hstack) of TF-IDF features and scaled engineered features"
+  }
+}

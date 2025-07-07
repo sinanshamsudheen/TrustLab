@@ -13,7 +13,7 @@ paths:
 
 # Kafka configuration
 kafka:
-  broker: "10.129.3.224:9092"  # Same as in original kafka_config.yaml
+  broker: "<INSERT-HERE>"  # Same as in original kafka_config.yaml
   consumer_group: unified-parser-anomaly-detection
   # Topics to monitor
   topics:

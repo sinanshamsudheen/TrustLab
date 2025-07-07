@@ -5,7 +5,7 @@
 
 # Kafka Configuration
 kafka:
-  broker: ""
+  broker: "<INSERT-HERE>"
   topics:
     - "web_auth" 
     - "webapt"

@@ -1,5 +1,0 @@
-broker: "10.130.171.246:9092"
-
-topics:
-  - postfix
-  - mail_login

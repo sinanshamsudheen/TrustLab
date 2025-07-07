@@ -1,0 +1,295 @@
+{
+  "features": [
+    {
+      "name": "url_length",
+      "description": "Total length of the URL",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "hostname_length",
+      "description": "Length of the hostname part of the URL",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "path_length",
+      "description": "Length of the path part of the URL",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "query_length",
+      "description": "Length of the query part of the URL",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "domain_length",
+      "description": "Length of the domain (without subdomains or TLD)",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "tld_length",
+      "description": "Length of the top-level domain",
+      "type": "integer",
+      "category": "Length-based"
+    },
+    {
+      "name": "has_ip",
+      "description": "Whether the URL contains an IP address instead of a domain name",
+      "type": "boolean (0/1)",
+      "category": "Boolean"
+    },
+    {
+      "name": "has_at_symbol",
+      "description": "Whether the URL contains '@' symbol",
+      "type": "boolean (0/1)",
+      "category": "Boolean"
+    },
+    {
+      "name": "count_dots",
+      "description": "Number of dots in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_hyphens",
+      "description": "Number of hyphens in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_slashes",
+      "description": "Number of forward slashes in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_underscores",
+      "description": "Number of underscores in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_question_marks",
+      "description": "Number of question marks in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_equals",
+      "description": "Number of equals signs in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_ampersands",
+      "description": "Number of ampersands in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_percent",
+      "description": "Number of percent signs (%) in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_semicolons",
+      "description": "Number of semicolons in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_colons",
+      "description": "Number of colons in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_brackets",
+      "description": "Number of brackets ((), [], {}) in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_plus",
+      "description": "Number of plus signs in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_asterisk",
+      "description": "Number of asterisks in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_digits",
+      "description": "Number of digits in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_uppercase",
+      "description": "Number of uppercase letters in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "count_lowercase",
+      "description": "Number of lowercase letters in the URL",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "special_char_count",
+      "description": "Number of special characters not including common URL separators (./-_:?)",
+      "type": "integer",
+      "category": "Character count"
+    },
+    {
+      "name": "digit_ratio",
+      "description": "Ratio of digits to total URL length",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "uppercase_ratio",
+      "description": "Ratio of uppercase letters to total URL length",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "hostname_digit_ratio",
+      "description": "Ratio of digits to hostname length",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "path_digit_ratio",
+      "description": "Ratio of digits to path length",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "vowel_consonant_ratio",
+      "description": "Ratio of vowels to total alphabetic characters in the URL",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "unique_char_ratio",
+      "description": "Ratio of unique characters to total URL length",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "numeric_domain_ratio",
+      "description": "Ratio of digits in the domain (excluding dots)",
+      "type": "float",
+      "category": "Ratio"
+    },
+    {
+      "name": "subdomain_count",
+      "description": "Number of subdomains in the URL",
+      "type": "integer",
+      "category": "Structure"
+    },
+    {
+      "name": "max_segment_length",
+      "description": "Maximum length of hostname segments (parts between dots)",
+      "type": "integer",
+      "category": "Structure"
+    },
+    {
+      "name": "avg_segment_length",
+      "description": "Average length of hostname segments",
+      "type": "float",
+      "category": "Structure"
+    },
+    {
+      "name": "path_depth",
+      "description": "Number of directories in the path",
+      "type": "integer",
+      "category": "Structure"
+    },
+    {
+      "name": "query_params",
+      "description": "Number of parameters in the query string",
+      "type": "integer",
+      "category": "Structure"
+    },
+    {
+      "name": "max_consecutive_digits",
+      "description": "Maximum number of consecutive digits in the URL",
+      "type": "integer",
+      "category": "Pattern"
+    },
+    {
+      "name": "max_consecutive_letters",
+      "description": "Maximum number of consecutive letters in the URL",
+      "type": "integer",
+      "category": "Pattern"
+    },
+    {
+      "name": "url_entropy",
+      "description": "Shannon entropy of characters in the URL (measure of randomness)",
+      "type": "float",
+      "category": "Entropy"
+    },
+    {
+      "name": "hostname_entropy",
+      "description": "Shannon entropy of characters in the hostname",
+      "type": "float",
+      "category": "Entropy"
+    },
+    {
+      "name": "path_entropy",
+      "description": "Shannon entropy of characters in the path",
+      "type": "float",
+      "category": "Entropy"
+    },
+    {
+      "name": "uses_https",
+      "description": "Whether the URL uses HTTPS protocol",
+      "type": "boolean (0/1)",
+      "category": "Boolean"
+    },
+    {
+      "name": "suspicious_words",
+      "description": "Count of suspicious words in the URL (login, secure, account, bank, verify)",
+      "type": "integer",
+      "category": "Lexical"
+    },
+    {
+      "name": "shortening_service",
+      "description": "Whether the URL uses a known URL shortening service",
+      "type": "boolean (0/1)",
+      "category": "Boolean"
+    },
+    {
+      "name": "suspicious_tld",
+      "description": "Whether the URL uses a TLD associated with phishing/malicious sites",
+      "type": "boolean (0/1)",
+      "category": "Boolean"
+    }
+  ],
+  "feature_categories": [
+    "Length-based",
+    "Character count",
+    "Ratio",
+    "Structure",
+    "Pattern",
+    "Entropy",
+    "Boolean",
+    "Lexical"
+  ],
+  "model_info": {
+    "type": "Logistic Regression",
+    "features_count": 46,
+    "output": "Binary classification (Phishing/Legitimate)"
+  }
+}

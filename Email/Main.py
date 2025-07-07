@@ -9,11 +9,11 @@ from sklearn.preprocessing import StandardScaler
 
 # Load the model and preprocessors
 try:
-    model = joblib.load("spam_model.pkl")
-    vectorizer = joblib.load("tfidf_vectorizer.pkl")
-    scaler = joblib.load("extra_features_scaler.pkl")
-    extra_feature_names = joblib.load("extra_feature_names.pkl")
-    background_data = np.load("shap_background_data.npy")
+    model = joblib.load("models/spam_model.pkl")
+    vectorizer = joblib.load("models/tfidf_vectorizer.pkl")
+    scaler = joblib.load("models/extra_features_scaler.pkl")
+    extra_feature_names = joblib.load("models/extra_feature_names.pkl")
+    background_data = np.load("models/shap_background_data.npy")
     print("All model artifacts loaded successfully!")
 except FileNotFoundError as e:
     print(f"Error loading model artifacts: {e}")
