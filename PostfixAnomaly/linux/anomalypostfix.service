@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/primum/PostfixAnomaly
-ExecStart=/bin/bash -c 'source /home/primum/.bashrc && conda activate py31010 && python /home/primum/PostfixAnomaly/src/kafka_anomaly_detector.py'
+WorkingDirectory=/home/primum/TrustLab/PostfixAnomaly
+ExecStart=/bin/bash -c 'source /home/primum/.bashrc && (source /home/primum/anaconda3/etc/profile.d/conda.sh || source /home/primum/miniconda3/etc/profile.d/conda.sh || source /opt/conda/etc/profile.d/conda.sh || true) && conda activate py31010 && python /home/primum/TrustLab/PostfixAnomaly/src/kafka_anomaly_detector.py'
 Restart=on-failure
 RestartSec=5
 StandardOutput=syslog
