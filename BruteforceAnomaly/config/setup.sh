@@ -85,8 +85,25 @@ sudo chmod +x /usr/local/bin/bruteforce-anomaly
 # Install systemd service
 echo "🔧 Installing systemd service..."
 if [ -f "$TARGET_DIR/config/bruteforce-anomaly.service" ]; then
-    # Create a temporary modified service file with updated paths
-    sed "s|%INSTALLATION_PATH%|$TARGET_DIR|g" "$TARGET_DIR/config/bruteforce-anomaly.service" > /tmp/bruteforce-anomaly.service
+    # Create a new service file with the correct paths
+    cat > /tmp/bruteforce-anomaly.service << EOF
+[Unit]
+Description=TrustLab SSH Brute Force Detection & APT Correlation System
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=$TARGET_DIR
+ExecStart=/usr/bin/python3 $TARGET_DIR/main.py --monitor
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
     sudo cp /tmp/bruteforce-anomaly.service /etc/systemd/system/
     sudo systemctl daemon-reload
     echo "✅ Systemd service installed."

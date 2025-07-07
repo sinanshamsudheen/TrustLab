@@ -56,6 +56,11 @@ sudo ./config/setup.sh
 # Start the service using systemd
 sudo systemctl start bruteforce-anomaly
 
+# If there's an error, check paths in the service file
+# sudo nano /etc/systemd/system/bruteforce-anomaly.service
+# Update WorkingDirectory and ExecStart paths if needed, then:
+# sudo systemctl daemon-reload && sudo systemctl restart bruteforce-anomaly
+
 # Enable the service to start at boot
 sudo systemctl enable bruteforce-anomaly
 ```
@@ -338,6 +343,25 @@ For issues and questions:
 2. Verify all dependencies are installed
 3. Check file permissions and paths
 4. Enable debug mode for detailed logging: `DEBUG = True` in Python files
+
+### Troubleshooting Systemd Service
+
+If the systemd service fails to start:
+
+```bash
+# Check the service status for detailed error messages
+sudo systemctl status bruteforce-anomaly.service
+
+# View service logs
+sudo journalctl -u bruteforce-anomaly
+
+# If there are path issues in the service file, update them manually:
+sudo nano /etc/systemd/system/bruteforce-anomaly.service
+# Edit WorkingDirectory and ExecStart paths to match your installation
+# Then reload and restart:
+sudo systemctl daemon-reload
+sudo systemctl restart bruteforce-anomaly
+```
 
 ---
 
