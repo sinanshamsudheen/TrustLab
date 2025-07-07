@@ -25,8 +25,13 @@ echo "Launching Kafka Anomaly Detector..."
 echo "Press Ctrl+C to stop the detector"
 echo
 
+# Activate conda environment
+echo "Activating conda environment py31010..."
+source ~/anaconda3/etc/profile.d/conda.sh || source ~/miniconda3/etc/profile.d/conda.sh
+conda activate py31010
+
 # Run the detector
-python3 kafka_anomaly_detector.py
+python kafka_anomaly_detector.py
 
 # Check the exit status
 if [ $? -ne 0 ]; then

@@ -1,8 +1,9 @@
 #!/bin/bash
 # AnomalyPostfix V2 Service Status for Linux
 
-# Define the installation directory
-INSTALL_DIR="/opt/PostfixAnomaly"
+# Define the installation directory using relative paths
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+INSTALL_DIR="$(dirname "$SCRIPT_DIR")"
 
 SERVICE_NAME="anomalypostfix"
 
