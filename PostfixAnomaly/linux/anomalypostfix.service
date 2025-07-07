@@ -1,0 +1,17 @@
+[Unit]
+Description=Postfix Anomaly Detection Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/zero/VSC/TrustLab/PostfixAnomaly
+ExecStart=/usr/bin/python3 /home/zero/VSC/TrustLab/PostfixAnomaly/src/kafka_anomaly_detector.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=anomalypostfix
+
+[Install]
+WantedBy=multi-user.target

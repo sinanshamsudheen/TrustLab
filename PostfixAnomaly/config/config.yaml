@@ -1,0 +1,60 @@
+# AnomalyPostfix v2 Configuration
+
+# System paths
+paths:
+  # Model artifacts
+  model: models/anomaly_det.pkl
+  scaler: models/scaler.pkl
+  features: features/selected_features.json
+  
+  # Output directories
+  output_dir: output
+  logs_dir: logs
+
+# Kafka configuration
+kafka:
+  broker: "10.130.171.246:9092"  # Same as in original kafka_config.yaml
+  consumer_group: unified-parser-anomaly-detection
+  # Topics to monitor
+  topics:
+    - postfix
+    - mail_login
+
+# Anomaly detection settings
+anomaly:
+  threshold:
+    high: -0.1    # High severity anomaly
+    medium: -0.05 # Medium severity anomaly
+    low: 0        # Low severity anomaly
+  
+  # Feature extraction settings
+  features:
+    - service_encoded
+    - event_encoded
+    - hour
+    - minute
+    - dayofweek
+    - msg_len
+    
+  # Service name mappings (for service_encoded)
+  service_mappings:
+    postfix/smtpd: 0
+    postfix/cleanup: 1
+    postfix/qmgr: 2
+    postfix/pickup: 3
+    postfix/bounce: 4
+    postfix/smtp: 5
+    unknown: 6
+    
+  # Event mappings (for event_encoded)
+  event_mappings:
+    connect: 0
+    disconnect: 1
+    NOQUEUE: 2
+    removed: 3
+    warning: 4
+    from: 5
+    to: 6
+    status: 7
+    sent: 8
+    unknown: 9
