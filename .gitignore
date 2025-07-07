@@ -17,3 +17,5 @@ Email/spam_Emails_data.csv
 *.tmp
 *.csv
 .env
+*.mkv
+*.mp4
