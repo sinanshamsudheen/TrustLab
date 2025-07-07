@@ -5,7 +5,7 @@
 
 # Kafka Configuration
 kafka:
-  broker: "10.130.171.246:9092"
+  broker: ""
   topics:
     - "web_auth" 
     - "webapt"
