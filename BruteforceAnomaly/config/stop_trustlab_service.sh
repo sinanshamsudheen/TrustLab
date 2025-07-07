@@ -4,9 +4,8 @@
 #
 
 # Directory where scripts are located
-PROJECT_NAME="BruteforceAnomaly"
-PROJECT_ROOT="/opt/$PROJECT_NAME"
-SCRIPT_DIR="$PROJECT_ROOT/config"
+SCRIPT_DIR="$(dirname "$0")"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 LOG_DIR="$PROJECT_ROOT/logs"
 
 # Function to log messages with timestamps

@@ -6,25 +6,14 @@ Setup script for SSH Brute Force Detection & APT Correlation System
 # Define project name and paths
 PROJECT_NAME="BruteforceAnomaly"
 SOURCE_DIR="$(dirname "$0")/.."
-TARGET_DIR="/opt/$PROJECT_NAME"
+TARGET_DIR="$SOURCE_DIR"  # Use the current directory instead of /opt/
 
 echo "🔧 Setting up SSH Brute Force Detection & APT Correlation System..."
 
-# Create target directory if it doesn't exist
-if [ ! -d "$TARGET_DIR" ]; then
-    echo "📁 Creating target directory at $TARGET_DIR..."
-    sudo mkdir -p "$TARGET_DIR"
-    sudo chown $(whoami):$(whoami) "$TARGET_DIR"
-else
-    echo "📁 Target directory $TARGET_DIR already exists."
-fi
+# We're already in the project directory, so no need to create or copy files
+echo "� Using current project directory: $TARGET_DIR"
 
-# Copy project files to target directory
-echo "📋 Copying project files to $TARGET_DIR..."
-sudo rsync -av --exclude="__pycache__" "$SOURCE_DIR/" "$TARGET_DIR/"
-sudo chown -R $(whoami):$(whoami) "$TARGET_DIR"
-
-# Move to project root at the target location
+# Move to project root
 cd "$TARGET_DIR" || {
     echo "❌ Failed to change directory to $TARGET_DIR"
     exit 1
@@ -40,9 +29,8 @@ chmod +x main.py
 
 # Create necessary directories
 echo "📁 Creating log directories..."
-sudo mkdir -p /home/primum/logs
-sudo mkdir -p /var/log/apt
 mkdir -p "$TARGET_DIR/logs"
+mkdir -p "$TARGET_DIR/logs/apt"
 
 # Install required Python packages if not already installed
 echo "📦 Installing Python dependencies from requirements.txt..."
@@ -85,15 +73,21 @@ except Exception as e:
     print('   The system will work with test data')
 " 2>/dev/null
 
-# Create symbolic links for easy access
-echo "🔗 Creating symbolic links for easy access..."
-sudo ln -sf "$TARGET_DIR/main.py" /usr/local/bin/bruteforce-anomaly
+# Create executable wrapper script for easy access
+echo "🔗 Creating wrapper script for easy access..."
+cat > /tmp/bruteforce-anomaly << EOF
+#!/bin/bash
+python3 "$TARGET_DIR/main.py" "\$@"
+EOF
+sudo mv /tmp/bruteforce-anomaly /usr/local/bin/bruteforce-anomaly
 sudo chmod +x /usr/local/bin/bruteforce-anomaly
 
-# Install systemd service
+# Install systemd service (after updating paths in the service file)
 echo "🔧 Installing systemd service..."
 if [ -f "$TARGET_DIR/config/bruteforce-anomaly.service" ]; then
-    sudo cp "$TARGET_DIR/config/bruteforce-anomaly.service" /etc/systemd/system/
+    # Create a temporary modified service file with updated paths
+    sed "s|/opt/$PROJECT_NAME|$TARGET_DIR|g" "$TARGET_DIR/config/bruteforce-anomaly.service" > /tmp/bruteforce-anomaly.service
+    sudo cp /tmp/bruteforce-anomaly.service /etc/systemd/system/
     sudo systemctl daemon-reload
     echo "✅ Systemd service installed. You can start it with: sudo systemctl start bruteforce-anomaly"
     echo "   To enable it on boot: sudo systemctl enable bruteforce-anomaly"
@@ -104,12 +98,12 @@ fi
 echo "✅ Setup completed!"
 echo ""
 echo "📚 Usage Examples:"
-echo "  Verify system setup:        $TARGET_DIR/config/verify_setup.py"
-echo "  Start log collection:       $TARGET_DIR/src/bruteforce_parser.py"
-echo "  Run anomaly detection:      $TARGET_DIR/main.py --detect"
-echo "  Start monitoring:           $TARGET_DIR/main.py --monitor"
-echo "  Test log parsing:           $TARGET_DIR/tests/test_log_parsing.py"
-echo "  Or simply use:              bruteforce-anomaly --detect/--monitor"
+echo "  Verify system setup:        python3 $TARGET_DIR/config/verify_setup.py"
+echo "  Start log collection:       python3 $TARGET_DIR/src/bruteforce_parser.py"
+echo "  Run anomaly detection:      python3 $TARGET_DIR/main.py --detect"
+echo "  Start monitoring:           python3 $TARGET_DIR/main.py --monitor"
+echo "  Test log parsing:           python3 $TARGET_DIR/tests/test_log_parsing.py"
+echo "  Or simply use:              python3 $TARGET_DIR/main.py --detect/--monitor"
 echo ""
 echo "🔍 System Components:"
 echo "  bruteforce_parser.py  - Kafka log consumer (real-time)"

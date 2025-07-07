@@ -49,11 +49,11 @@ A security monitoring system that detects SSH brute force attacks and correlates
 # Clone the repository
 git clone https://github.com/yourusername/BruteforceAnomaly.git
 
-# Run the setup script which will install the project to /opt/BruteforceAnomaly
+# Run the setup script which will configure the project in its current location
 cd BruteforceAnomaly
 sudo ./config/setup.sh
 
-# The system is now installed at /opt/BruteforceAnomaly
+# The system is now ready to use from the current directory
 
 # Start the service using systemd
 sudo systemctl start bruteforce-anomaly
@@ -66,16 +66,16 @@ sudo systemctl enable bruteforce-anomaly
 
 ```bash
 # Verify that all dependencies are correctly installed
-python3 /opt/BruteforceAnomaly/config/verify_setup.py
+python3 ./config/verify_setup.py
 
 # Run test log parsing 
-python3 /opt/BruteforceAnomaly/tests/test_log_parsing.py
+python3 ./tests/test_log_parsing.py
 
 # Create test suspicious logs
-python3 /opt/BruteforceAnomaly/tests/create_suspicious_logs.py
+python3 ./tests/create_suspicious_logs.py
 
 # Test the detection system
-python3 /opt/BruteforceAnomaly/main.py --detect
+python3 ./main.py --detect
 ```
 
 ## 🚀 Running the System

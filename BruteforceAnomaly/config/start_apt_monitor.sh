@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Start the APT monitoring service
-PROJECT_NAME="BruteforceAnomaly"
-PROJECT_ROOT="/opt/$PROJECT_NAME"
+SCRIPT_DIR="$(dirname "$0")"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 cd "$PROJECT_ROOT"
 python3 main.py --monitor >> logs/apt_monitor.log 2>&1 &

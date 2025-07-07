@@ -5,9 +5,8 @@
 #
 
 # Directory where scripts are located
-PROJECT_NAME="BruteforceAnomaly"
-PROJECT_ROOT="/opt/$PROJECT_NAME"
-SCRIPT_DIR="$PROJECT_ROOT/config"
+SCRIPT_DIR="$(dirname "$0")"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 LOG_DIR="$PROJECT_ROOT/logs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
@@ -52,7 +51,7 @@ setup_bruteforce_cron() {
     else
         log "Setting up cron job for bruteforce detector"
         # Run every minute
-        (crontab -l 2>/dev/null; echo "* * * * * cd $SCRIPT_DIR && python3 $SCRIPT_DIR/bruteforce_detector.py >> $LOG_DIR/bruteforce_detector.log 2>&1") | crontab -
+        (crontab -l 2>/dev/null; echo "* * * * * cd $PROJECT_ROOT && python3 $PROJECT_ROOT/src/bruteforce_detector.py >> $LOG_DIR/bruteforce_detector.log 2>&1") | crontab -
         log "Cron job added: bruteforce detector will run every minute"
     fi
 }
@@ -91,7 +90,7 @@ setup_logrotate
 
 # Initial run of bruteforce detector
 log "Running initial bruteforce detection scan..."
-python3 "$SCRIPT_DIR/bruteforce_detector.py" >> "$LOG_DIR/bruteforce_detector.log" 2>&1
+python3 "$PROJECT_ROOT/src/bruteforce_detector.py" >> "$LOG_DIR/bruteforce_detector.log" 2>&1
 
 log "TrustLab Security Monitoring Services started successfully"
 log "APT Monitor is running as a background service"

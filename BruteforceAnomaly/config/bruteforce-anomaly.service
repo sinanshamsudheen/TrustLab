@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/BruteforceAnomaly
-ExecStart=/opt/BruteforceAnomaly/config/trustlab_service.sh
-ExecStop=/opt/BruteforceAnomaly/config/stop_trustlab_service.sh
+WorkingDirectory=%INSTALLATION_PATH%
+ExecStart=%INSTALLATION_PATH%/config/trustlab_service.sh
+ExecStop=%INSTALLATION_PATH%/config/stop_trustlab_service.sh
 Restart=on-failure
 RestartSec=5s
 
