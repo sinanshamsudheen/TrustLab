@@ -355,13 +355,17 @@ sudo systemctl status bruteforce-anomaly.service
 # View service logs
 sudo journalctl -u bruteforce-anomaly
 
-# If there are path issues in the service file, update them manually:
+# If there's an issue with paths in the service file:
 sudo nano /etc/systemd/system/bruteforce-anomaly.service
-# Edit WorkingDirectory and ExecStart paths to match your installation
+# Ensure these have absolute paths (systemd requirement):
+# WorkingDirectory=/home/username/path/to/BruteforceAnomaly
+# ExecStart=/usr/bin/python3 /home/username/path/to/BruteforceAnomaly/main.py --monitor
 # Then reload and restart:
 sudo systemctl daemon-reload
 sudo systemctl restart bruteforce-anomaly
 ```
+
+**Note:** Systemd requires absolute paths in service files. The setup script automatically uses absolute paths, but you may need to adjust them if your installation location changes.
 
 ---
 

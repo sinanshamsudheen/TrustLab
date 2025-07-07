@@ -5,8 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/primum/TrustLab/BruteforceAnomaly
-ExecStart=/usr/bin/python3 /home/primum/TrustLab/BruteforceAnomaly/main.py --monitor
+# These paths will be replaced with absolute paths by setup.sh
+WorkingDirectory=/path/to/installation
+ExecStart=/usr/bin/python3 /path/to/installation/main.py --monitor
 Restart=on-failure
 RestartSec=5s
 StandardOutput=journal

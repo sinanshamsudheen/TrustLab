@@ -5,19 +5,21 @@ Setup script for SSH Brute Force Detection & APT Correlation System
 
 # Define project name and paths
 PROJECT_NAME="BruteforceAnomaly"
-SOURCE_DIR="$(dirname "$0")/.."
-TARGET_DIR="$SOURCE_DIR"  # Use the current directory instead of /opt/
+SOURCE_DIR=".."  # Relative path to parent directory from config/
+TARGET_DIR="$SOURCE_DIR"  # Use the parent directory
 
 echo "🔧 Setting up SSH Brute Force Detection & APT Correlation System..."
 
-# We're already in the project directory, so no need to create or copy files
-echo "� Using current project directory: $TARGET_DIR"
+# We're already in the config directory, move to project root
+echo "📂 Moving to project root directory..."
 
 # Move to project root
 cd "$TARGET_DIR" || {
     echo "❌ Failed to change directory to $TARGET_DIR"
     exit 1
 }
+
+echo "📍 Working from: $(pwd)"
 
 # Make Python scripts executable
 echo "🔑 Setting executable permissions..."
@@ -85,7 +87,11 @@ sudo chmod +x /usr/local/bin/bruteforce-anomaly
 # Install systemd service
 echo "🔧 Installing systemd service..."
 if [ -f "$TARGET_DIR/config/bruteforce-anomaly.service" ]; then
-    # Create a new service file with the correct paths
+    # Get absolute path for systemd (required by systemd)
+    ABSOLUTE_PATH="$(cd "$(pwd)"; pwd)"
+    echo "📂 Using absolute path for systemd service: $ABSOLUTE_PATH"
+    
+    # Create a new service file with absolute paths (required by systemd)
     cat > /tmp/bruteforce-anomaly.service << EOF
 [Unit]
 Description=TrustLab SSH Brute Force Detection & APT Correlation System
@@ -94,8 +100,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=$TARGET_DIR
-ExecStart=/usr/bin/python3 $TARGET_DIR/main.py --monitor
+WorkingDirectory=$ABSOLUTE_PATH
+ExecStart=/usr/bin/python3 $ABSOLUTE_PATH/main.py --monitor
 Restart=on-failure
 RestartSec=5s
 StandardOutput=journal
@@ -106,7 +112,7 @@ WantedBy=multi-user.target
 EOF
     sudo cp /tmp/bruteforce-anomaly.service /etc/systemd/system/
     sudo systemctl daemon-reload
-    echo "✅ Systemd service installed."
+    echo "✅ Systemd service installed with absolute paths (required by systemd)."
     
     # Create log directories for the service
     echo "📁 Creating log directories for the service..."
@@ -118,6 +124,10 @@ EOF
     
     echo "✅ System is ready to be started with: sudo systemctl start bruteforce-anomaly"
     echo "   Enable at boot with: sudo systemctl enable bruteforce-anomaly"
+    echo ""
+    echo "ℹ️  Note: If the systemd service fails to start, verify the path in:"
+    echo "   /etc/systemd/system/bruteforce-anomaly.service"
+    echo "   Systemd requires absolute paths in WorkingDirectory and ExecStart."
 else
     echo "⚠️ Service file not found. Skipping systemd service installation."
 fi
