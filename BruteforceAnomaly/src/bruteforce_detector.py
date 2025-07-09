@@ -43,7 +43,9 @@ elif os.path.exists(local_log_file):
 else:
     LOG_FILE = production_log_file
     
-KNOWN_USERS = { "192.168.10.15": "primum" }  # IP to expected user mapping
+# IP to expected user mapping - Add your known legitimate users here
+# Example format: KNOWN_USERS = { "192.168.1.100": "username", "10.0.0.5": "admin" }
+KNOWN_USERS = {}  # Empty by default - populate with your legitimate IP-to-user mappings
 
 # Improved regex patterns - updated for raw log format
 IP_REGEX = re.compile(r'rhost=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|from\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')

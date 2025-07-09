@@ -49,7 +49,7 @@ class Config:
             # Set some default values if config loading fails
             self.config = {
                 "kafka": {
-                    "broker": "10.130.171.246:9092",
+                    "broker": "localhost:9092",  # Default Kafka broker - update with your broker address
                     "topics": ["web_auth", "webapt"],
                     "consumer_group": "auth-consumer-group"
                 },
