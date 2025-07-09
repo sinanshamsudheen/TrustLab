@@ -13,9 +13,7 @@ TrustLab/phishing_with_features_final.csv
 Email/spam_Emails_data.csv
 
 # Logs and temp files
-*.log
 *.tmp
 *.csv
 .env
-*.mkv
 *.mp4
