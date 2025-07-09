@@ -1,19 +1,10 @@
-# Python
 __pycache__/
 *.py[cod]
 
-# VSCode / Jupyter / IDE
 .vscode/
 .ipynb_checkpoints/
 
-# Data files
-Phishing/phishing_with_features_final.csv
-TrustLab/Phishing/phishing_with_features.csv
-TrustLab/phishing_with_features_final.csv
-Email/spam_Emails_data.csv
-
-# Logs and temp files
 *.tmp
 *.csv
 .env
-*.mp4
+*.log
