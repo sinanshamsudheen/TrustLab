@@ -3,6 +3,11 @@
 echo "Setting up AnomalyPostfix V2..."
 echo
 
+# First run the make_ready.sh script to prepare the repository
+echo "Running make_ready.sh to prepare repository..."
+./make_ready.sh
+echo
+
 # Use current directory as the installation directory
 INSTALL_DIR=$(pwd)
 echo "Installation directory: $INSTALL_DIR"
@@ -19,6 +24,7 @@ chmod -R 755 output logs
 # Make all scripts executable
 echo "Setting script permissions..."
 find . -name "*.sh" -exec chmod +x {} \;
+chmod +x src/retrain.py
 
 # Check for required Python packages
 echo "Checking for required packages..."
@@ -72,4 +78,10 @@ fi
 echo
 echo "To install as a service:"
 echo "  sudo ./linux/service_manager.sh install"
+echo
+echo "To set up automatic model retraining (weekly by default):"
+echo "  sudo ./setup_cron.sh"
+echo
+echo "To manually retrain the model:"
+echo "  sudo ./retrain_model.sh"
 echo
